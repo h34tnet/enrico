@@ -1,5 +1,7 @@
 package net.h34t.enrico;
 
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Stack;
 
 /**
@@ -15,6 +17,8 @@ public class VM {
     public int[] memory;
     public int maxStackSize = 256;
     public int maxCallStackSize = 256;
+
+    public Writer out = new PrintWriter(System.out);
 
     public int ip = 0, a = 0, b = 0, c = 0, d = 0;
 
@@ -81,7 +85,14 @@ public class VM {
         return this;
     }
 
+    public VM setPrintWriter(Writer writer) {
+        this.out = writer;
+        return this;
+    }
+
     public void next() {
         ip++;
     }
+
+
 }

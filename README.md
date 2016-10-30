@@ -2,8 +2,9 @@
 
 Enrico is a weekend-project toy interpreter for an simplified assembly-like language.
 
-All operations operate on the memory of the *virtual machine* (Italicised because it's not really a virtual machine i 
-think, just a memory context. Is there a difference?).
+All operations operate on the memory of the *virtual machine* - Italicised because it's not really a virtual machine; 
+currently it's just an object to hold the state of execution. If i don't loose interest it may become more like a VM in
+the future.
 
 The VM consists of:
 
@@ -18,7 +19,9 @@ The VM consists of:
 
 ## Program
 
-A program consists of a list of operations plus a hash map for looking up the ips of labels.
+A program consists of a list of operations plus a hash map for looking up the ips of labels. 
+
+Most operations have parameters which are either registers, constants or labels.
 
 ## Parser
 
@@ -105,3 +108,9 @@ Weekend project - I was bored. I don't really know anything about VMs, compilers
 ### Why "Enrico"?
  
 Enrico is the name of a TV clown. And the project is a joke.
+
+### Plans
+
+* Maybe make it more VM-ier (i.e. store code in the VM memory itself, etc).
+* Move away from "everything is an integer" and add support for floating points.
+* Add "print"

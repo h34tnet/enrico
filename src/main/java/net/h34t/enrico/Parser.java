@@ -114,6 +114,10 @@ public class Parser {
                             op = new RetOp();
                             break;
 
+                        case "print":
+                            op = new PrintOp(ref(operands[1]));
+                            break;
+
                         default:
                             throw new RuntimeException("Unknown operation \"" + line + "\" at " + r.getLineNumber());
                     }

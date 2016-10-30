@@ -1,5 +1,7 @@
 package net.h34t.enrico;
 
+import java.io.IOException;
+
 /**
  * The interpreter runs a program.
  */
@@ -38,6 +40,13 @@ public class Interpreter {
         } catch (IndexOutOfBoundsException ioe) {
             // ran past the end
             return null;
+
+        } finally {
+            try {
+                vm.out.flush();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
