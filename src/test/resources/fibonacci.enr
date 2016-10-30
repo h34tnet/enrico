@@ -1,0 +1,22 @@
+# calculates the nth fibonacci number (0, 1, 1, 2, 3, 5, ...)
+
+load d 0            # the desired fib number is stored here
+jmpe def0 d 1       # special cases for 0
+jmpe def1 d 2       # and 1
+
+set c 2             # initialize the current iteration to 2, because 0 and 1 are special cases
+set a 0             # predefine the first two fib nums
+set b 1
+
+label loop
+add a a b           # add the two numbers before
+swp a b             # thanks to this swap we don't need memory
+add c c 1           # current iteration counter
+jmpne loop c d      # if the current iteration isn't there yet, repeat
+res b               # otherwise we've got a result!
+
+label def0
+res 0
+
+label def1
+res 1
