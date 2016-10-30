@@ -3,8 +3,12 @@ package net.h34t.enrico;
 import net.h34t.enrico.op.*;
 
 import java.io.*;
+import java.util.regex.Pattern;
 
 public class Parser {
+
+    public static final Pattern PATTERN_HEX_CONST = Pattern.compile("0x[0-9a-fA-F]+");
+    public static final Pattern PATTERN_BIN_CONST = Pattern.compile("b[0|1]+");
 
     public static Program load(Reader reader) throws IOException {
         Program program = new Program();
@@ -27,39 +31,39 @@ public class Parser {
 
                     switch (operands[0]) {
                         case "set":
-                            op = new SetOp(Ref.from(operands[1]), Ref.from(operands[2]));
+                            op = new SetOp(ref(operands[1]), ref(operands[2]));
                             break;
 
                         case "add":
-                            op = new AddOp(Ref.from(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new AddOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "sub":
-                            op = new SubOp(Ref.from(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new SubOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "mul":
-                            op = new MulOp(Ref.from(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new MulOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "div":
-                            op = new DivOp(Ref.from(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new DivOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "mod":
-                            op = new ModOp(Ref.from(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new ModOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "res":
-                            op = new ResOp(Ref.from(operands[1]));
+                            op = new ResOp(ref(operands[1]));
                             break;
 
                         case "load":
-                            op = new LoadOp(Ref.from(operands[1]), Ref.from(operands[2]));
+                            op = new LoadOp(ref(operands[1]), ref(operands[2]));
                             break;
 
                         case "save":
-                            op = new SaveOp(Ref.from(operands[1]), Ref.from(operands[2]));
+                            op = new SaveOp(ref(operands[1]), ref(operands[2]));
                             break;
 
                         case "jmp":
@@ -67,35 +71,35 @@ public class Parser {
                             break;
 
                         case "jmpgt":
-                            op = new JmpGTOp(new Label(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new JmpGTOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmplt":
-                            op = new JmpLTOp(new Label(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new JmpLTOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmpe":
-                            op = new JmpEOp(new Label(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new JmpEOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmpne":
-                            op = new JmpNEOp(new Label(operands[1]), Ref.from(operands[2]), Ref.from(operands[3]));
+                            op = new JmpNEOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "swp":
-                            op = new SwpOp(Ref.from(operands[1]), Ref.from(operands[2]));
+                            op = new SwpOp(ref(operands[1]), ref(operands[2]));
                             break;
 
                         case "push":
-                            op = new PushOp(Ref.from(operands[1]));
+                            op = new PushOp(ref(operands[1]));
                             break;
 
                         case "pop":
-                            op = new PopOp(Ref.from(operands[1]));
+                            op = new PopOp(ref(operands[1]));
                             break;
 
                         case "peek":
-                            op = new PeekOp(Ref.from(operands[1]));
+                            op = new PeekOp(ref(operands[1]));
                             break;
 
                         case "label":
@@ -139,5 +143,27 @@ public class Parser {
 
     public static Program load(File file) throws IOException {
         return load(new FileReader(file));
+    }
+
+    public static Ref ref(String token) {
+        if (PATTERN_HEX_CONST.matcher(token).matches()) {
+            return new Constant(Integer.parseInt(token.substring(2), 16));
+        } else if (PATTERN_BIN_CONST.matcher(token).matches()) {
+            return new Constant(Integer.parseInt(token.substring(1), 2));
+        }
+
+        switch (token) {
+            case "a":
+                return new Register(Register.Reg.A);
+            case "b":
+                return new Register(Register.Reg.B);
+            case "c":
+                return new Register(Register.Reg.C);
+            case "d":
+                return new Register(Register.Reg.D);
+            default:
+                int i = Integer.parseInt(token);
+                return new Constant(i);
+        }
     }
 }
