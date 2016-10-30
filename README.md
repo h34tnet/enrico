@@ -63,6 +63,11 @@ Empty lines and everything after a `#` (comment) is discarded.
 * `res op`: exits the program, returning the value of op
 * `label label_name`: defines a label which can be used as the target of program flow operations
 
+### IO
+
+* `print op`: prints the value converted to an unicode char to the writer provided to the VM
+* `read op`: reads a char from the reader provided to the VM
+
 # Example programs
 
 ## Fibonacci
@@ -103,7 +108,8 @@ to run the program:
 
 ### What is this?
 
-Weekend project - I was bored. I don't really know anything about VMs, compilers, interpreters, etc.
+Weekend project - I was bored. I don't really know anything about VMs, compilers, interpreters, etc., but working on 
+this and exploring my own ideas how it "could work" is quite satisfying.
  
 ### Why "Enrico"?
  

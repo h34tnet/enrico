@@ -1,6 +1,8 @@
 package net.h34t.enrico;
 
 import java.io.PrintWriter;
+import java.io.Reader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.util.Stack;
 
@@ -19,6 +21,7 @@ public class VM {
     public int maxCallStackSize = 256;
 
     public Writer out = new PrintWriter(System.out);
+    public Reader in;
 
     public int ip = 0, a = 0, b = 0, c = 0, d = 0;
 
@@ -87,6 +90,11 @@ public class VM {
 
     public VM setPrintWriter(Writer writer) {
         this.out = writer;
+        return this;
+    }
+
+    public VM setInputReader(Reader reader) {
+        this.in = reader;
         return this;
     }
 

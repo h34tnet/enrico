@@ -1,5 +1,6 @@
 package net.h34t.enrico;
 
+import com.sun.xml.internal.messaging.saaj.util.CharReader;
 import org.junit.Test;
 
 import java.io.StringWriter;
@@ -41,6 +42,28 @@ public class DivTest {
         vm.setPrintWriter(out);
         new Interpreter().run(vm, p);
         assertEquals("hello", out.toString());
+    }
+
+    @Test
+    public void testReadPrint() {
+        VM vm = new VM();
+
+        Program p = Parser.load(
+                "label loop\n" +
+                        "read a\n" +
+                        "jmpe exit a 0\n" +
+                        "print a\n" +
+                        "jmp loop\n" +
+                        "label exit\n" +
+                        "res 1");
+
+        char[] input = "hello world\0".toCharArray();
+
+        StringWriter out = new StringWriter();
+        vm.setPrintWriter(out);
+        vm.setInputReader(new CharReader(input, input.length));
+        new Interpreter().run(vm, p);
+        assertEquals("hello world", out.toString());
     }
 
 }
