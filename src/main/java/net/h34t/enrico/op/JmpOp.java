@@ -7,15 +7,20 @@ import net.h34t.enrico.*;
  */
 public class JmpOp implements Operation {
 
-    private final Label label;
+    private final Ref label;
 
-    public JmpOp(Label label) {
+    public JmpOp(Ref label) {
         this.label = label;
     }
 
     @Override
     public Integer exec(VM vm, Program program) {
-        vm.ip = program.getAddressOfLabel(label);
+        vm.ip = label.getValue(vm);
         return null;
+    }
+
+    @Override
+    public String toString() {
+        return "jmp to " + label.toString();
     }
 }

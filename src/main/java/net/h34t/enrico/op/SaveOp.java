@@ -23,4 +23,9 @@ public class SaveOp implements Operation {
         vm.next();
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "save " + register.toString() + " => mem[" + addr.toString() + "]";
+    }
 }

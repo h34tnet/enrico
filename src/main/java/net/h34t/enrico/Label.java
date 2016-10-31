@@ -1,15 +1,25 @@
 package net.h34t.enrico;
 
-public class Label {
+public class Label implements Ref {
 
-    private final String label;
+    private final String name;
+    private int offs = -1;
 
-    public Label(String label) {
-        this.label = label;
+    public Label(String name) {
+        this.name = name;
     }
 
-    public String getLabel() {
-        return label;
+    public Label(String name, int offs) {
+        this.name = name;
+        this.offs = offs;
+    }
+
+    public void setOffset(int offset) {
+        this.offs = offset;
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -19,11 +29,26 @@ public class Label {
 
         Label label1 = (Label) o;
 
-        return label != null ? label.equals(label1.label) : label1.label == null;
+        return name != null ? name.equals(label1.name) : label1.name == null;
     }
 
     @Override
     public int hashCode() {
-        return label != null ? label.hashCode() : 0;
+        return name != null ? name.hashCode() : 0;
+    }
+
+    @Override
+    public int getValue(VM vm) {
+        return offs;
+    }
+
+    @Override
+    public void setValue(VM vm, int val) {
+        throw new RuntimeException("Can't assign a value to a name.");
+    }
+
+    @Override
+    public String toString() {
+        return "label \"" + name + "\" @ " + offs;
     }
 }

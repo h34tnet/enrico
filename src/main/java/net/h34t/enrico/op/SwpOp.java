@@ -24,4 +24,10 @@ public class SwpOp implements Operation {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "swap " + reg1.toString() + " <-> " + reg2.toString();
+    }
+
 }

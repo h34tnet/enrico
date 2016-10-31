@@ -21,4 +21,9 @@ public class SetOp implements Operation {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "set " + a.toString() + " to " + b.toString();
+    }
 }

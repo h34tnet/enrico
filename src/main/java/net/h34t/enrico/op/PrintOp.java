@@ -26,4 +26,9 @@ public class PrintOp implements Operation {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "print " + r.toString();
+    }
 }

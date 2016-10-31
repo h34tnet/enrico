@@ -3,15 +3,29 @@ package net.h34t.enrico;
 import net.h34t.enrico.op.*;
 
 import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 public class Parser {
 
     public static final Pattern PATTERN_HEX_CONST = Pattern.compile("0x[0-9a-fA-F]+");
     public static final Pattern PATTERN_BIN_CONST = Pattern.compile("b[0|1]+");
+    public static final Pattern PATTERN_VARIABLE = Pattern.compile("\\$[a-zA-Z0-9]+");
+    public static final Pattern PATTERN_LABEL = Pattern.compile(":[a-zA-Z0-9]+");
 
-    public static Program load(Reader reader) throws IOException {
-        Program program = new Program();
+    private final Map<String, Label> referencedLabels;
+    private final Map<String, Integer> variableOffsets;
+
+    private Program program;
+
+    public Parser() {
+        this.referencedLabels = new HashMap<>();
+        this.variableOffsets = new HashMap<>();
+    }
+
+    public Parser load(Reader reader) throws IOException {
+        program = new Program();
         LineNumberReader r = new LineNumberReader(reader);
         String line, instr;
 
@@ -28,6 +42,12 @@ public class Parser {
 
                 try {
                     final Operation op;
+
+                    if (PATTERN_LABEL.matcher(instr).matches()) {
+                        int ip = program.size();
+                        defineLabel(instr, ip);
+                        continue;
+                    }
 
                     switch (operands[0]) {
                         case "set":
@@ -67,23 +87,23 @@ public class Parser {
                             break;
 
                         case "jmp":
-                            op = new JmpOp(new Label(operands[1]));
+                            op = new JmpOp(ref(operands[1]));
                             break;
 
                         case "jmpgt":
-                            op = new JmpGTOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpGTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmplt":
-                            op = new JmpLTOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpLTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmpe":
-                            op = new JmpEOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmpne":
-                            op = new JmpNEOp(new Label(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpNEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "swp":
@@ -102,12 +122,8 @@ public class Parser {
                             op = new PeekOp(ref(operands[1]));
                             break;
 
-                        case "label":
-                            op = new LabelOp(new Label(operands[1]));
-                            break;
-
                         case "call":
-                            op = new CallOp(new Label(operands[1]));
+                            op = new CallOp(ref(operands[1]));
                             break;
 
                         case "ret":
@@ -121,6 +137,10 @@ public class Parser {
                         case "read":
                             op = new ReadOp(ref(operands[1]));
                             break;
+
+                        case "def":
+                            defineVariable(operands[1]);
+                            continue;
 
                         default:
                             throw new RuntimeException("Unknown operation \"" + line + "\" at " + r.getLineNumber());
@@ -138,10 +158,10 @@ public class Parser {
             }
         }
 
-        return program;
+        return this;
     }
 
-    public static Program load(String program) throws RuntimeException {
+    public Parser load(String program) throws RuntimeException {
         try {
             return load(new StringReader(program));
         } catch (IOException ioe) {
@@ -149,15 +169,28 @@ public class Parser {
         }
     }
 
-    public static Program load(File file) throws IOException {
+    public Parser load(File file) throws IOException {
         return load(new FileReader(file));
     }
 
-    public static Ref ref(String token) {
+    private Ref ref(String token) {
         if (PATTERN_HEX_CONST.matcher(token).matches()) {
             return new Constant(Integer.parseInt(token.substring(2), 16));
+
         } else if (PATTERN_BIN_CONST.matcher(token).matches()) {
             return new Constant(Integer.parseInt(token.substring(1), 2));
+
+        } else if (PATTERN_VARIABLE.matcher(token).matches()) {
+            return new Variable(token, getMemOffsetForVariable(token));
+
+        } else if (PATTERN_LABEL.matcher(token).matches()) {
+
+            if (!this.referencedLabels.containsKey(token)) {
+                Label label = new Label(token);
+                this.referencedLabels.put(token, label);
+                return label;
+            } else
+                return this.referencedLabels.get(token);
         }
 
         switch (token) {
@@ -173,5 +206,41 @@ public class Parser {
                 int i = Integer.parseInt(token);
                 return new Constant(i);
         }
+    }
+
+    public Program compile() {
+
+        for (Label label : referencedLabels.values()) {
+            if (label.getValue(null) == -1)
+                throw new RuntimeException("unedfined label \"" + label.getName() + "\"");
+        }
+
+        return program;
+    }
+
+
+    /**
+     * Stores memory offsets for variables.
+     *
+     * @param name the name of the variable
+     */
+    public void defineVariable(String name) {
+        variableOffsets.put(name, variableOffsets.size());
+    }
+
+    public void defineLabel(String name, int offs) {
+
+        if (this.referencedLabels.containsKey(name)) {
+            this.referencedLabels.get(name).setOffset(offs);
+        } else {
+            this.referencedLabels.put(name, new Label(name, offs));
+        }
+    }
+
+
+    public int getMemOffsetForVariable(String name) {
+        Integer addr = variableOffsets.get(name);
+        if (addr != null) return addr;
+        else throw new RuntimeException("Undefined variable \"" + name + "\"");
     }
 }

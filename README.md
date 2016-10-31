@@ -8,11 +8,14 @@ the future.
 
 The VM consists of:
 
-* Four general purpose registers: a, b, c and d.
+* Four general purpose registers: a, b, c and d. 
+  ~~Note: as soon as variables (memory offset translation) is implemented, registers are pretty much obsolete because
+    there's no speed difference anyway.~~ Note: variables are now implemented.
 * The instruction register, which can be only manipulated by `jmp*`, the `call` and the `ret` operations.
   Otherwise it's incremented after every operation.
 * Main memory: just an array of integers. Currently, integers are the only data type. It's accessed through the
-  `load` and `save` operations.
+  `load reg offs` and `save val offs` operations or by defining and accessing variables (`def $foo` and then using them)
+  ~~Note: as soon as variables are implemented, this isn't really *needed* anymore~~
 * Stack: a simple stack, accessible through the `push`, `pop` and `peek` operations.
 * CallStack: the `call` operation stores the current IP on the call stack. The `ret` operation pops it and resumes
   program execution at the next instruction.
@@ -45,23 +48,28 @@ Empty lines and everything after a `#` (comment) is discarded.
 
 ### Memory operations
 
-* `load reg value`: sets the register to the value of the memory at offset `value`
-* `save reg value`: sets the value of the memory at offset `value` to register
-* `push reg`: pushes the register on the stack
-* `pop reg`: pops the register from the stack
-* `peek reg`: sets the register to the topmost element of the stack without removing it
+* `def $variable`: defines a variable, zero-initialized
+* `load ref value`: sets the register to the value of the memory at offset `value`
+* `save ref value`: sets the value of the memory at offset `value` to register
+* `push ref`: pushes the register on the stack
+* `pop ref`: pops the register from the stack
+* `peek ref`: sets the register to the topmost element of the stack without removing it
 
 ### Program flow
 
-* `jmp label`: an unconditional jump
-* `jmpe label op1 op2`: jumps to label if op1 == op2
-* `jmpne label op1 op2`: jumps to label if op1 != op2
-* `jmpgt label op1 op2`: jumps to label if op1 > op2
-* `jmplt label op1 op2`: jumps to label if op1 < op2
-* `call label`: unconditional jump that stores the ip on the call stack, to be used in combination with `ret`
+* `:label`: defines a label which can be used as the target of program flow operations
+* `jmp :label`: an unconditional jump
+* `jmpe :label op1 op2`: jumps to label if op1 == op2
+* `jmpne :label op1 op2`: jumps to label if op1 != op2
+* `jmpgt :label op1 op2`: jumps to label if op1 > op2
+* `jmplt :label op1 op2`: jumps to label if op1 < op2
+* `call :label`: unconditional jump that stores the ip on the call stack, to be used in combination with `ret`
 * `ret`: unconditional jump to one instruction after the last stored ip on the call stack
 * `res op`: exits the program, returning the value of op
-* `label label_name`: defines a label which can be used as the target of program flow operations
+
+Note: now that labels are translated to int ip-offsets, it should be
+ possible to jump to arbitrary locations by passing registers, variables
+ or constants.
 
 ### IO
 

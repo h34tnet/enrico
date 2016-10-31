@@ -1,11 +1,13 @@
 # adds up all values in memory until we hit a zero-value
 
 set c 0             # we don't need this, registers are 0 initialized anyway
-label loop
+
+:loop
 load d c            # load value of mem-c into d
-jmpe finalize d 0      # if d is zero, we're done
+jmpe :finalize d 0  # if d is zero, we're done
 add a a d           # sum it up
 add c c 1           # next memory slot
-jmp loop            # restart
-label finalize
+jmp :loop           # restart
+
+:finalize
 res a               # return value

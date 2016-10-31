@@ -11,8 +11,8 @@ public class Interpreter {
     }
 
     private Integer exec(final VM vm, final Operation instruction, final Program program, final int ipLen) {
-
         Integer res = instruction.exec(vm, program);
+
         if (res != null)
             return res;
 

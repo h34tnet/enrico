@@ -21,4 +21,10 @@ public class SubOp implements Operation {
         vm.next();
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "add " + a.toString() + " = " + b.toString() + " - " + c.toString();
+    }
+
 }

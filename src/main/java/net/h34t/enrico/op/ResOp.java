@@ -19,4 +19,9 @@ public class ResOp implements Operation {
         vm.next();
         return val;
     }
+
+    @Override
+    public String toString() {
+        return "res " + reg.toString();
+    }
 }

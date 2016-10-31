@@ -15,4 +15,10 @@ public class RetOp implements Operation {
         vm.ip = vm.callStack.pop() + 1;
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "ret";
+    }
+
 }

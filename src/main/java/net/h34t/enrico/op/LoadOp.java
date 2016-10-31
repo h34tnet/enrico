@@ -24,4 +24,9 @@ public class LoadOp implements Operation {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "load " + register.toString() + " <= mem[" + addr.toString() + "]";
+    }
 }

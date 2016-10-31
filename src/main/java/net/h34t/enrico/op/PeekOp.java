@@ -20,4 +20,9 @@ public class PeekOp implements Operation {
         vm.next();
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "peek " + reg.toString();
+    }
 }

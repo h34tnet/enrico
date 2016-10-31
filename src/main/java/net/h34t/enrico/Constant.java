@@ -14,6 +14,11 @@ public class Constant implements Ref {
 
     @Override
     public void setValue(VM vm, int val) {
-        throw new RuntimeException("can't write to constant");
+        throw new RuntimeException("Can't assign a value to a constant.");
+    }
+
+    @Override
+    public String toString() {
+        return "Const " + value;
     }
 }

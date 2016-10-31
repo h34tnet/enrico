@@ -45,5 +45,10 @@ public class Register implements Ref {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Reg " + reg.name();
+    }
+
     public enum Reg {A, B, C, D}
 }

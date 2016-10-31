@@ -27,4 +27,9 @@ public class ReadOp implements Operation {
 
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "read into " + r.toString();
+    }
 }

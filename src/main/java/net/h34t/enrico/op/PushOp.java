@@ -22,4 +22,9 @@ public class PushOp implements Operation {
         vm.next();
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "push " + reg.toString();
+    }
 }

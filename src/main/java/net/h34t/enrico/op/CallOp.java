@@ -1,15 +1,12 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Label;
-import net.h34t.enrico.Operation;
-import net.h34t.enrico.Program;
-import net.h34t.enrico.VM;
+import net.h34t.enrico.*;
 
 public class CallOp implements Operation {
 
-    private final Label label;
+    private final Ref label;
 
-    public CallOp(Label label) {
+    public CallOp(Ref label) {
         this.label = label;
     }
 
@@ -19,7 +16,13 @@ public class CallOp implements Operation {
             throw new RuntimeException("Call Stack size exceeded");
 
         vm.callStack.push(vm.ip);
-        vm.ip = program.getAddressOfLabel(label);
+        vm.ip = label.getValue(vm);
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "call " + label.toString();
+    }
+
 }

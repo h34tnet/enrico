@@ -1,0 +1,28 @@
+# calculates the nth fibonacci number (0, 1, 1, 2, 3, 5, ...)
+# needs at least 4 ints of VM ram
+
+def $it
+def $cur
+def $lo
+def $hi
+
+read $it            # read the desired fib from io
+jmpe :def0 $it 1    # special cases for 0
+jmpe :def1 $it 2    # and 1
+
+set $cur 2          # initialize the current iteration to 2, because 0 and 1 are special cases
+set $lo 0           # predefine the first two fib nums
+set $hi 1
+
+:loop
+add $lo $lo $hi         # add the two numbers before
+swp $lo $hi             # thanks to this swap we don't need memory
+add $cur $cur 1           # current iteration counter
+jmpne :loop $cur $it    # if the current iteration isn't there yet, repeat
+res $hi                 # otherwise we've got a result!
+
+:def0
+res 0
+
+:def1
+res 1

@@ -2,7 +2,6 @@ package net.h34t.enrico;
 
 import java.io.PrintWriter;
 import java.io.Reader;
-import java.io.StringReader;
 import java.io.Writer;
 import java.util.Stack;
 

@@ -20,4 +20,9 @@ public class PopOp implements Operation {
         vm.next();
         return null;
     }
+
+    @Override
+    public String toString() {
+        return "pop " + reg.toString();
+    }
 }
