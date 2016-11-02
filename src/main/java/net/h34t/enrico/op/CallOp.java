@@ -21,6 +21,11 @@ public class CallOp implements Operation {
     }
 
     @Override
+    public int[] encode() {
+        return Encoder.encode(CALL, label);
+    }
+
+    @Override
     public String toString() {
         return "call " + label.toString();
     }

@@ -4,8 +4,7 @@ import net.h34t.enrico.*;
 
 public class JmpGTOp implements Operation {
 
-    private final Ref label;
-    private final Ref op1, op2;
+    private final Ref label, op1, op2;
 
     public JmpGTOp(Ref label, Ref op1, Ref op2) {
         this.label = label;
@@ -22,6 +21,10 @@ public class JmpGTOp implements Operation {
         return null;
     }
 
+    @Override
+    public int[] encode() {
+        return Encoder.encode(JMPGT, label, op1, op2);
+    }
 
     @Override
     public String toString() {

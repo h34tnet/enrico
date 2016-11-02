@@ -1,9 +1,6 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Operation;
-import net.h34t.enrico.Program;
-import net.h34t.enrico.Ref;
-import net.h34t.enrico.VM;
+import net.h34t.enrico.*;
 
 import java.io.IOException;
 
@@ -26,6 +23,11 @@ public class ReadOp implements Operation {
         vm.next();
 
         return null;
+    }
+
+    @Override
+    public int[] encode() {
+        return Encoder.encode(READ, r);
     }
 
     @Override

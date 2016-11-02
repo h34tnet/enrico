@@ -23,6 +23,10 @@ public class JmpLTOp implements Operation {
         return null;
     }
 
+    @Override
+    public int[] encode() {
+        return Encoder.encode(JMPLT, label, op1, op2);
+    }
 
     @Override
     public String toString() {

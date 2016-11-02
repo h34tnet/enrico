@@ -24,4 +24,9 @@ public class Variable implements Ref {
     public String toString() {
         return "Var " + name + " @ " + offs;
     }
+
+    @Override
+    public int encode() {
+        return offs;
+    }
 }

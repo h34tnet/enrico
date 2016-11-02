@@ -1,14 +1,10 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Operation;
-import net.h34t.enrico.Program;
-import net.h34t.enrico.Ref;
-import net.h34t.enrico.VM;
+import net.h34t.enrico.*;
 
 public class JmpEOp implements Operation {
 
-    private final Ref label;
-    private final Ref op1, op2;
+    private final Ref label, op1, op2;
 
     public JmpEOp(Ref label, Ref op1, Ref op2) {
         this.label = label;
@@ -24,6 +20,11 @@ public class JmpEOp implements Operation {
             vm.next();
 
         return null;
+    }
+
+    @Override
+    public int[] encode() {
+        return Encoder.encode(JMPE, label, op1, op2);
     }
 
     @Override

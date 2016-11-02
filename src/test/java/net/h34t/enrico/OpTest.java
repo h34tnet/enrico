@@ -347,21 +347,6 @@ public class OpTest {
         new Parser().load("# hello world\n\nset a 1 # inc\nset b 2 #help\n");
     }
 
-    @Test
-    public void testOperation() throws IOException {
-        Operation op = new Operation() {
-            @Override
-            public Integer exec(VM vm, Program program) {
-                return 3;
-            }
-        };
-
-        Program p = new Program();
-        p.add(op);
-        int res = new Interpreter().run(new VM(), p);
-        assertEquals(3, res);
-    }
-
     @Test(expected = RuntimeException.class)
     public void testInvalidRegister() {
         Register r = new Register(null);

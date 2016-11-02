@@ -46,14 +46,6 @@ program. One operation per line. Empty lines and everything after a
 
 ## Operations
 
-### Arithmetic
-
-* `add reg p1 p2`: sets reg to p1 + p2
-* `sub reg p1 p2`: sets reg to p1 - p2
-* `mul reg p1 p2`: sets reg to p1 * p2
-* `div reg p1 p2`: sets reg to p1 / p2
-* `mod reg p1 p2`: sets reg to p1 % p2 (the remainder)
-
 ### Register operations
 
 * `set reg value`: sets the value of reg to value, which might be 
@@ -66,6 +58,8 @@ program. One operation per line. Empty lines and everything after a
     are accessed by prefixing a name with a $. Right now you have to 
     initialize the VM with enough memory for the variables defined
     in the program, otherwise there'll be an access violation.
+    **Note:** this is not an operation! It just ties a memory offset
+      to a variable name.
 * `load ref value`: sets the register to the value of the memory at 
   offset `value`
 * `save ref value`: sets the value of the memory at offset `value` to 
@@ -79,6 +73,8 @@ program. One operation per line. Empty lines and everything after a
 
 * `:label`: defines a label which can be used as the target of program 
   flow operations. Labels are always `:`-prefixed.
+  **Note:** This is not an operation. Labels are turned into constants 
+  after parsing.
 * `jmp :label`: an unconditional jump
 * `jmpe :label op1 op2`: jumps to label if op1 == op2
 * `jmpne :label op1 op2`: jumps to label if op1 != op2
@@ -93,6 +89,14 @@ program. One operation per line. Empty lines and everything after a
 Note: now that labels are translated to int ip-offsets, it should be
  possible to jump to arbitrary locations by passing registers, variables
  or constants.
+
+### Arithmetic
+
+* `add reg p1 p2`: sets reg to p1 + p2
+* `sub reg p1 p2`: sets reg to p1 - p2
+* `mul reg p1 p2`: sets reg to p1 * p2
+* `div reg p1 p2`: sets reg to p1 / p2
+* `mod reg p1 p2`: sets reg to p1 % p2 (the remainder)
 
 ### IO
 

@@ -1,9 +1,6 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Operation;
-import net.h34t.enrico.Program;
-import net.h34t.enrico.Ref;
-import net.h34t.enrico.VM;
+import net.h34t.enrico.*;
 
 public class ResOp implements Operation {
 
@@ -18,6 +15,11 @@ public class ResOp implements Operation {
         int val = reg.getValue(vm);
         vm.next();
         return val;
+    }
+
+    @Override
+    public int[] encode() {
+        return Encoder.encode(RES, reg);
     }
 
     @Override

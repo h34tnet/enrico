@@ -21,4 +21,9 @@ public class Constant implements Ref {
     public String toString() {
         return "Const " + value;
     }
+
+    @Override
+    public int encode() {
+        return value;
+    }
 }

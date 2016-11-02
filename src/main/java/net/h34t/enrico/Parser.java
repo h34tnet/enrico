@@ -18,6 +18,7 @@ public class Parser {
     private final Map<String, Integer> variableOffsets;
 
     private Program program;
+    private int memCounter = 0;
 
     public Parser() {
         this.referencedLabels = new HashMap<>();
@@ -139,7 +140,12 @@ public class Parser {
                             break;
 
                         case "def":
-                            defineVariable(operands[1]);
+                            // all variable definitions are made here
+                            int size = operands.length > 2
+                                    ? Integer.parseInt(operands[1])
+                                    : 1;
+
+                            defineVariable(operands[1], size);
                             continue;
 
                         default:
@@ -208,24 +214,33 @@ public class Parser {
         }
     }
 
-    public Program compile() {
-
+    public void ensureLabelDefinitions() {
         for (Label label : referencedLabels.values()) {
             if (label.getValue(null) == -1)
-                throw new RuntimeException("unedfined label \"" + label.getName() + "\"");
+                throw new RuntimeException("Undefined label \"" + label.getName() + "\"");
         }
+    }
 
+    /**
+     * The only compilation step right now is to find unresolved labels, i.e. labels that are used but never defined.
+     *
+     * @return a program (i.e. a list of ops)
+     */
+    public Program compile() {
+        ensureLabelDefinitions();
         return program;
     }
 
-
     /**
      * Stores memory offsets for variables.
+     * <p>
+     * Only works with single integers for now
      *
      * @param name the name of the variable
      */
-    public void defineVariable(String name) {
-        variableOffsets.put(name, variableOffsets.size());
+    public void defineVariable(String name, int size) {
+        variableOffsets.put(name, memCounter);
+        memCounter += size;
     }
 
     public void defineLabel(String name, int offs) {

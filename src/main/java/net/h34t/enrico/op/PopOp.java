@@ -1,9 +1,6 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Operation;
-import net.h34t.enrico.Program;
-import net.h34t.enrico.Ref;
-import net.h34t.enrico.VM;
+import net.h34t.enrico.*;
 
 public class PopOp implements Operation {
 
@@ -19,6 +16,11 @@ public class PopOp implements Operation {
         reg.setValue(vm, vm.stack.pop());
         vm.next();
         return null;
+    }
+
+    @Override
+    public int[] encode() {
+        return Encoder.encode(POP, reg);
     }
 
     @Override

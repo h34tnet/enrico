@@ -33,6 +33,11 @@ public class Label implements Ref {
     }
 
     @Override
+    public int encode() {
+        return offs;
+    }
+
+    @Override
     public int hashCode() {
         return name != null ? name.hashCode() : 0;
     }

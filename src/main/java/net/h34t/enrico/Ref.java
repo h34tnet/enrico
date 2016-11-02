@@ -5,4 +5,6 @@ public interface Ref {
     int getValue(VM vm);
 
     void setValue(VM vm, int val);
+
+    int encode();
 }

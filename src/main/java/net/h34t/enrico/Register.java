@@ -46,6 +46,22 @@ public class Register implements Ref {
     }
 
     @Override
+    public int encode() {
+        switch (reg) {
+            case A:
+                return 0;
+            case B:
+                return 1;
+            case C:
+                return 2;
+            case D:
+                return 3;
+            default:
+                throw new RuntimeException("unknown register \"" + reg.toString() + "\"");
+        }
+    }
+
+    @Override
     public String toString() {
         return "Reg " + reg.name();
     }
