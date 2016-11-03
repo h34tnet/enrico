@@ -12,7 +12,7 @@ public class CompilationTest {
                 .load("set a 2\nset b 3\nadd a a b\nres a")
                 .compile();
 
-        int[] byteCode = program.compile();
+        int[] byteCode = new Compiler().compile(program);
 
         for (int aByteCode : byteCode)
             System.out.print(aByteCode + " ");

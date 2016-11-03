@@ -7,6 +7,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+/**
+ * The Parser turns source code into an intermediate representation (AST) that can be either interpreted or
+ * compiled to machine code.
+ *
+ * TODO: add an option to get addresses from variables, i.e.
+ *
+ * <code>
+ * def $hello
+ * set a @hello
+ * </code>
+ *
+ * this assigns the memory position of $hello to register a.
+ *
+ */
 public class Parser {
 
     public static final Pattern PATTERN_HEX_CONST = Pattern.compile("0x[0-9a-fA-F]+");

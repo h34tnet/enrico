@@ -24,7 +24,7 @@ public class SwpOp implements Operation {
 
     @Override
     public int[] encode() {
-        return Encoder.encode(500, reg1, reg2);
+        return Encoder.encode(SWP, reg1, reg2);
     }
 
     @Override

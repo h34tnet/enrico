@@ -34,9 +34,6 @@ public interface Operation {
     int PRINT = 400;
     int READ = 401;
 
-
-
-
     Integer exec(VM vm, Program program);
 
     int[] encode();

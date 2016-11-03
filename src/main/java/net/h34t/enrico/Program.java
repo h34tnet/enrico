@@ -1,15 +1,19 @@
 package net.h34t.enrico;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Program {
 
     private final List<Operation> operations;
+    private final Map<Label, Integer> labelOffsets;
 
 
     public Program() {
         this.operations = new ArrayList<>();
+        this.labelOffsets = new HashMap<>();
     }
 
     public void add(Operation op) {
@@ -24,28 +28,16 @@ public class Program {
         return this.operations.size();
     }
 
-    /**
-     * Translates the program into (virtual) machine code.
-     *
-     * @return the emitted machine code
-     */
-    public int[] compile() {
-        // int size = 0;
-        List<Integer> bytecode = new ArrayList<>();
+    public List<Operation> getOperations() {
+        return operations;
+    }
 
-        for (Operation op : operations) {
-            // int paramCount = op.getClass().getConstructors()[0].getParameterCount();
-            // size += paramCount * 2;
-            int[] encop = op.encode();
-            for (int iop : encop)
-                bytecode.add(iop);
-        }
+    public int getAddressOfLabel(Label label) {
+        return labelOffsets.get(label);
+    }
 
-        int[] bc = new int[bytecode.size()];
-        for (int i = 0, ii = bc.length; i < ii; i++)
-            bc[i] = bytecode.get(i);
-
-        return bc;
+    public void setAddressOfLabel(Label label, int offset) {
+        labelOffsets.put(label, offset);
     }
 
 }

@@ -3,7 +3,7 @@ package net.h34t.enrico;
 public class Label implements Ref {
 
     private final String name;
-    private int offs = -1;
+    // private int offs = -1;
 
     public Label(String name) {
         this.name = name;
@@ -11,12 +11,12 @@ public class Label implements Ref {
 
     public Label(String name, int offs) {
         this.name = name;
-        this.offs = offs;
+        // this.offs = offs;
     }
 
-    public void setOffset(int offset) {
-        this.offs = offset;
-    }
+//    public void setOffset(int offset) {
+//        this.offs = offset;
+//    }
 
     public String getName() {
         return name;
@@ -33,8 +33,8 @@ public class Label implements Ref {
     }
 
     @Override
-    public int encode() {
-        return offs;
+    public int encode(Program program) {
+        return program.getAddressOfLabel(this);
     }
 
     @Override
