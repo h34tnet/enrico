@@ -6,5 +6,5 @@ public interface Ref {
 
     void setValue(VM vm, int val);
 
-    int encode(Program program);
+    int encode(LabelOffsetTranslator program);
 }

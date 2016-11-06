@@ -13,15 +13,15 @@ public class SubOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         a.setValue(vm, b.getValue(vm) - c.getValue(vm));
-        vm.next();
+        vm.next(3);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(SUB, a, b, c);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, SUB, a, b, c);
     }
 
     @Override

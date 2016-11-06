@@ -11,16 +11,16 @@ public class PeekOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         if (vm.stack.size() == 0) throw new RuntimeException("peek on empty stack");
         reg.setValue(vm, vm.stack.peek());
-        vm.next();
+        vm.next(1);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(PEEK, reg);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, PEEK, reg);
     }
 
     @Override

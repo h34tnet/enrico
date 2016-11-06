@@ -1,30 +1,35 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.Encoder;
 import net.h34t.enrico.LabelOffsetTranslator;
 import net.h34t.enrico.Operation;
+import net.h34t.enrico.Ref;
 import net.h34t.enrico.VM;
 
-public class RetOp implements Operation {
+public class LabelOp implements Operation {
 
-    public RetOp() {
+    private final Ref label;
+
+    public LabelOp(Ref label) {
+        this.label = label;
     }
 
     @Override
     public Integer exec(VM vm) {
-        // one instruction after the call
-        vm.ip = vm.callStack.pop();
+        vm.next(1);
         return null;
+    }
+
+    public Ref getLabel() {
+        return label;
     }
 
     @Override
     public int[] encode(LabelOffsetTranslator lot) {
-        return Encoder.encode(lot, RET);
+        return new int[]{};
     }
 
     @Override
     public String toString() {
-        return "ret";
+        return "res " + label.toString();
     }
-
 }

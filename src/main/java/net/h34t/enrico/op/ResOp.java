@@ -11,15 +11,14 @@ public class ResOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
-        int val = reg.getValue(vm);
-        vm.next();
-        return val;
+    public Integer exec(VM vm) {
+        // vm.next(1);
+        return reg.getValue(vm);
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(RES, reg);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, RES, reg);
     }
 
     @Override

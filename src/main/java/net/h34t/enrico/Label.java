@@ -3,20 +3,10 @@ package net.h34t.enrico;
 public class Label implements Ref {
 
     private final String name;
-    // private int offs = -1;
 
     public Label(String name) {
         this.name = name;
     }
-
-    public Label(String name, int offs) {
-        this.name = name;
-        // this.offs = offs;
-    }
-
-//    public void setOffset(int offset) {
-//        this.offs = offset;
-//    }
 
     public String getName() {
         return name;
@@ -33,8 +23,8 @@ public class Label implements Ref {
     }
 
     @Override
-    public int encode(Program program) {
-        return program.getAddressOfLabel(this);
+    public int encode(LabelOffsetTranslator program) {
+        return program.get(this);
     }
 
     @Override
@@ -44,7 +34,7 @@ public class Label implements Ref {
 
     @Override
     public int getValue(VM vm) {
-        return offs;
+        throw new RuntimeException("Raw label value access for \"" + name + "\"");
     }
 
     @Override
@@ -54,6 +44,6 @@ public class Label implements Ref {
 
     @Override
     public String toString() {
-        return "label \"" + name + "\" @ " + offs;
+        return "label \"" + name + "\"";
     }
 }

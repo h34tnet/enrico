@@ -11,8 +11,8 @@ public class ProgramTest {
 
     @Test
     public void testAddAll() throws IOException {
-        Program p = new Parser().load(
-                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("addtest.enr"))).compile();
+        Program p = new Parser().parse(
+                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("addtest.enr")));
 
         VM vm = new VM(new int[]{1, 2, 3, 4, 5, 0, 1, 2, 3});
 
@@ -22,8 +22,8 @@ public class ProgramTest {
 
     @Test
     public void testAddAll2() throws IOException {
-        Program p = new Parser().load(
-                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("addtest.enr"))).compile();
+        Program p = new Parser().parse(
+                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("addtest.enr")));
 
         VM vm = new VM(new int[]{0, 1, 0});
 
@@ -34,8 +34,8 @@ public class ProgramTest {
 
     @Test
     public void testFibonacci() throws IOException {
-        Program p = new Parser().load(
-                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci.enr"))).compile();
+        Program p = new Parser().parse(
+                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci.enr")));
 
         // special cases
         Assert.assertEquals(0, (int) new Interpreter().run(new VM(new int[]{1}), p));
@@ -52,8 +52,8 @@ public class ProgramTest {
 
     @Test
     public void testFibonacciVar() throws IOException {
-        Program p = new Parser().load(
-                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci-var.enr"))).compile();
+        Program p = new Parser().parse(
+                new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci-var.enr")));
 
         // special cases
         Assert.assertEquals(0, (int) new Interpreter().run(new VM(new int[4]).setInputReader(new CharReader(new char[]{1}, 1)), p));

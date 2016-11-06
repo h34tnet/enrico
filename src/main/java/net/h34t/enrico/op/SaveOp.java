@@ -12,18 +12,18 @@ public class SaveOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         if (addr.getValue(vm) >= vm.memSize)
             throw new RuntimeException("OOM Access");
 
         vm.memory[addr.getValue(vm)] = this.register.getValue(vm);
-        vm.next();
+        vm.next(2);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(SAVE, register, addr);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, SAVE, register, addr);
     }
 
     @Override

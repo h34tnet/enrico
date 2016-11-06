@@ -9,6 +9,25 @@ public class Register implements Ref {
         this.reg = reg;
     }
 
+    public Register(int reg) {
+        switch (reg) {
+            case 0:
+                this.reg = Reg.A;
+                break;
+            case 1:
+                this.reg = Reg.B;
+                break;
+            case 2:
+                this.reg = Reg.C;
+                break;
+            case 3:
+                this.reg = Reg.D;
+                break;
+            default:
+                throw new RuntimeException("Unknown register #" + reg);
+        }
+    }
+
     @Override
     public int getValue(VM vm) {
         switch (reg) {
@@ -46,7 +65,7 @@ public class Register implements Ref {
     }
 
     @Override
-    public int encode() {
+    public int encode(LabelOffsetTranslator lot) {
         switch (reg) {
             case A:
                 return 0;

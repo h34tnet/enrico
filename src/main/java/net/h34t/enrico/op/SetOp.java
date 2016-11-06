@@ -12,16 +12,16 @@ public class SetOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         this.a.setValue(vm, this.b.getValue(vm));
-        vm.next();
+        vm.next(2);
 
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(SET, a, b);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, SET, a, b);
     }
 
     @Override

@@ -34,8 +34,12 @@ public interface Operation {
     int PRINT = 400;
     int READ = 401;
 
-    Integer exec(VM vm, Program program);
+    Integer exec(VM vm);
 
-    int[] encode();
+    int[] encode(LabelOffsetTranslator program);
+
+    interface AddressTranslator {
+        void translate(LabelOffsetTranslator translator);
+    }
 
 }

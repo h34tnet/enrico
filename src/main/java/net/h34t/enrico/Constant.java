@@ -23,7 +23,7 @@ public class Constant implements Ref {
     }
 
     @Override
-    public int encode() {
+    public int encode(LabelOffsetTranslator lot) {
         return value;
     }
 }

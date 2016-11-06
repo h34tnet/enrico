@@ -2,10 +2,10 @@ package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
 
-public class JmpLTEOp implements Operation {
+public class JmpLTEOp implements Operation, Operation.AddressTranslator {
 
-
-    private final Ref label, op1, op2;
+    private final Ref op1, op2;
+    private Ref label;
 
     public JmpLTEOp(Ref label, Ref op1, Ref op2) {
         this.label = label;
@@ -14,17 +14,23 @@ public class JmpLTEOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         if (this.op1.getValue(vm) <= this.op2.getValue(vm))
             vm.ip = label.getValue(vm);
         else
-            vm.next();
+            vm.next(3);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(JMPLTE, label, op1, op2);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, JMPLTE, label, op1, op2);
+    }
+
+    @Override
+    public void translate(LabelOffsetTranslator translator) {
+        if (label instanceof Label)
+            label = new Constant(translator.get((Label) label));
     }
 
     @Override

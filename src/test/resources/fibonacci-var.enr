@@ -17,7 +17,7 @@ set $hi 1
 :loop
 add $lo $lo $hi         # add the two numbers before
 swp $lo $hi             # thanks to this swap we don't need memory
-add $cur $cur 1           # current iteration counter
+add $cur $cur 1         # current iteration counter
 jmpne :loop $cur $it    # if the current iteration isn't there yet, repeat
 res $hi                 # otherwise we've got a result!
 

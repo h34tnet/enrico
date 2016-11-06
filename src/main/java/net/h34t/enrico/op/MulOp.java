@@ -13,15 +13,15 @@ public class MulOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         a.setValue(vm, b.getValue(vm) * c.getValue(vm));
-        vm.next();
+        vm.next(3);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(MUL, a, b, c);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, MUL, a, b, c);
     }
 
     @Override

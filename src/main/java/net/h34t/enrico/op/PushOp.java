@@ -11,18 +11,18 @@ public class PushOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         if (vm.stack.size() >= vm.maxStackSize)
             throw new RuntimeException("Stack size exceeded");
 
         vm.stack.push(reg.getValue(vm));
-        vm.next();
+        vm.next(1);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(PUSH, reg);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, PUSH, reg);
     }
 
     @Override

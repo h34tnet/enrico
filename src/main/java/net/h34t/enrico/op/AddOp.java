@@ -13,15 +13,15 @@ public class AddOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         target.setValue(vm, op1.getValue(vm) + op2.getValue(vm));
-        vm.next();
+        vm.next(3);
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(ADD, target, op1, op2);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, ADD, target, op1, op2);
     }
 
     @Override

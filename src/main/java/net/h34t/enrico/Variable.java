@@ -12,12 +12,12 @@ public class Variable implements Ref {
 
     @Override
     public int getValue(VM vm) {
-        return vm.memory[offs];
+        return vm.memory[vm.memOffs + offs];
     }
 
     @Override
     public void setValue(VM vm, int val) {
-        vm.memory[offs] = val;
+        vm.memory[vm.memOffs + offs] = val;
     }
 
     @Override
@@ -26,7 +26,7 @@ public class Variable implements Ref {
     }
 
     @Override
-    public int encode() {
+    public int encode(LabelOffsetTranslator lot) {
         return offs;
     }
 }

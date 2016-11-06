@@ -13,20 +13,20 @@ public class PrintOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         try {
             vm.out.write(r.getValue(vm));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        vm.next();
+        vm.next(1);
 
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(PRINT, r);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, PRINT, r);
     }
 
     @Override

@@ -12,19 +12,19 @@ public class SwpOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         int tmp = reg1.getValue(vm);
         reg1.setValue(vm, reg2.getValue(vm));
         reg2.setValue(vm, tmp);
 
-        vm.next();
+        vm.next(2);
 
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(SWP, reg1, reg2);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, SWP, reg1, reg2);
     }
 
     @Override

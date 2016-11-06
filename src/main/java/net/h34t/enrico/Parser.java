@@ -10,16 +10,15 @@ import java.util.regex.Pattern;
 /**
  * The Parser turns source code into an intermediate representation (AST) that can be either interpreted or
  * compiled to machine code.
- *
+ * <p>
  * TODO: add an option to get addresses from variables, i.e.
- *
+ * <p>
  * <code>
  * def $hello
  * set a @hello
  * </code>
- *
+ * <p>
  * this assigns the memory position of $hello to register a.
- *
  */
 public class Parser {
 
@@ -31,7 +30,6 @@ public class Parser {
     private final Map<String, Label> referencedLabels;
     private final Map<String, Integer> variableOffsets;
 
-    private Program program;
     private int memCounter = 0;
 
     public Parser() {
@@ -39,8 +37,8 @@ public class Parser {
         this.variableOffsets = new HashMap<>();
     }
 
-    public Parser load(Reader reader) throws IOException {
-        program = new Program();
+    public Program parse(Reader reader) throws IOException {
+        Program program = new Program();
         LineNumberReader r = new LineNumberReader(reader);
         String line, instr;
 
@@ -56,12 +54,10 @@ public class Parser {
                 String[] operands = instr.split("\\s+");
 
                 try {
-                    final Operation op;
+                    Operation op = null;
 
                     if (PATTERN_LABEL.matcher(instr).matches()) {
-                        int ip = program.size();
-                        defineLabel(instr, ip);
-                        continue;
+                        op = new LabelOp(ref(operands[0]));
                     }
 
                     switch (operands[0]) {
@@ -109,8 +105,16 @@ public class Parser {
                             op = new JmpGTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
+                        case "jmpgte":
+                            op = new JmpGTEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            break;
+
                         case "jmplt":
                             op = new JmpLTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            break;
+
+                        case "jmplte":
+                            op = new JmpLTEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
                             break;
 
                         case "jmpe":
@@ -161,12 +165,13 @@ public class Parser {
 
                             defineVariable(operands[1], size);
                             continue;
-
-                        default:
-                            throw new RuntimeException("Unknown operation \"" + line + "\" at " + r.getLineNumber());
                     }
 
-                    program.add(op);
+                    if (op != null) {
+                        program.add(op);
+                    } else {
+                        throw new RuntimeException("Unknown operation \"" + line + "\" at " + r.getLineNumber());
+                    }
 
                 } catch (NumberFormatException a) {
                     throw new RuntimeException("Unknown operand \"" + line + "\" at " + r.getLineNumber());
@@ -178,19 +183,19 @@ public class Parser {
             }
         }
 
-        return this;
+        return program;
     }
 
-    public Parser load(String program) throws RuntimeException {
+    public Program parse(String program) throws RuntimeException {
         try {
-            return load(new StringReader(program));
+            return parse(new StringReader(program));
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
     }
 
-    public Parser load(File file) throws IOException {
-        return load(new FileReader(file));
+    public Program parse(File file) throws IOException {
+        return parse(new FileReader(file));
     }
 
     private Ref ref(String token) {
@@ -228,23 +233,6 @@ public class Parser {
         }
     }
 
-    public void ensureLabelDefinitions() {
-        for (Label label : referencedLabels.values()) {
-            if (label.getValue(null) == -1)
-                throw new RuntimeException("Undefined label \"" + label.getName() + "\"");
-        }
-    }
-
-    /**
-     * The only compilation step right now is to find unresolved labels, i.e. labels that are used but never defined.
-     *
-     * @return a program (i.e. a list of ops)
-     */
-    public Program compile() {
-        ensureLabelDefinitions();
-        return program;
-    }
-
     /**
      * Stores memory offsets for variables.
      * <p>
@@ -256,16 +244,6 @@ public class Parser {
         variableOffsets.put(name, memCounter);
         memCounter += size;
     }
-
-    public void defineLabel(String name, int offs) {
-
-        if (this.referencedLabels.containsKey(name)) {
-            this.referencedLabels.get(name).setOffset(offs);
-        } else {
-            this.referencedLabels.put(name, new Label(name, offs));
-        }
-    }
-
 
     public int getMemOffsetForVariable(String name) {
         Integer addr = variableOffsets.get(name);

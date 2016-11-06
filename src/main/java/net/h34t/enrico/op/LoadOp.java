@@ -12,19 +12,19 @@ public class LoadOp implements Operation {
     }
 
     @Override
-    public Integer exec(VM vm, Program program) {
+    public Integer exec(VM vm) {
         if (addr.getValue(vm) >= vm.memSize)
             throw new RuntimeException("OOM Access");
 
         this.register.setValue(vm, vm.memory[addr.getValue(vm)]);
-        vm.next();
+        vm.next(2);
 
         return null;
     }
 
     @Override
-    public int[] encode() {
-        return Encoder.encode(LOAD, register, addr);
+    public int[] encode(LabelOffsetTranslator lot) {
+        return Encoder.encode(lot, LOAD, register, addr);
     }
 
     @Override
