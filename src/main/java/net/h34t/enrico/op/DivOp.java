@@ -25,6 +25,11 @@ public class DivOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public String toString() {
         return "add " + a.toString() + " = " + b.toString() + " / " + c.toString();
     }

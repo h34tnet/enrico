@@ -25,6 +25,11 @@ public class JmpOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
+    public int length() {
+        return 3;
+    }
+
+    @Override
     public String toString() {
         return "jmp to " + label.toString();
     }

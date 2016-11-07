@@ -22,6 +22,11 @@ public class SaveOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 5;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, SAVE, register, addr);
     }

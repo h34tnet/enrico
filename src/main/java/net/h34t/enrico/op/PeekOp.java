@@ -19,6 +19,11 @@ public class PeekOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 3;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, PEEK, reg);
     }

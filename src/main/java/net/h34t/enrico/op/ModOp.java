@@ -20,6 +20,11 @@ public class ModOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, MOD, a, b, c);
     }

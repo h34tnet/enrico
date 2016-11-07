@@ -29,6 +29,11 @@ public class JmpLTOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public void translate(LabelOffsetTranslator translator) {
         if (label instanceof Label)
             label = new Constant(translator.get((Label) label));

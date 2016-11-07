@@ -1,9 +1,6 @@
 package net.h34t.enrico;
 
-import net.h34t.enrico.op.AddOp;
-import net.h34t.enrico.op.JmpLTEOp;
-import net.h34t.enrico.op.ResOp;
-import net.h34t.enrico.op.SetOp;
+import net.h34t.enrico.op.*;
 
 import java.io.PrintWriter;
 import java.io.Reader;
@@ -65,6 +62,12 @@ public class VM {
         this.d = d;
     }
 
+    public VM loadProgram(int[] code) {
+        System.arraycopy(code, 0, memory, 0, code.length);
+        memOffs = code.length;
+        return this;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -109,34 +112,126 @@ public class VM {
     }
 
     public Integer exec() {
-
-        // read the program size
-        memOffs = memory[ip];
-        ip++;
-
         while (true) {
             // get the next operation
             int op = memory[ip];
+            final Operation operation;
 
             switch (op) {
                 case Operation.SET:
-                    new SetOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4])).exec(this);
+                    operation = new SetOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]));
                     break;
+
+                case Operation.SWP:
+                    operation = new SwpOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]));
+                    break;
+
                 case Operation.ADD:
-                    new AddOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6])).exec(this);
+                    operation = new AddOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
                     break;
+
+                case Operation.SUB:
+                    operation = new SubOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.MUL:
+                    operation = new MulOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.DIV:
+                    operation = new DivOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.MOD:
+                    operation = new ModOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.LOAD:
+                    operation = new LoadOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]));
+                    break;
+
+                case Operation.SAVE:
+                    operation = new SaveOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]));
+                    break;
+
+                case Operation.PUSH:
+                    operation = new PushOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.POP:
+                    operation = new PopOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.PEEK:
+                    operation = new PeekOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.JMP:
+                    operation = new JmpOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.JMPE:
+                    operation = new JmpEOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.JMPNE:
+                    operation = new JmpNEOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.JMPGT:
+                    operation = new JmpGTOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.JMPGTE:
+                    operation = new JmpGTEOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
+                case Operation.JMPLT:
+                    operation = new JmpLTOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
+                    break;
+
                 case Operation.JMPLTE:
-                    new JmpLTEOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6])).exec(this);
+                    operation = new JmpLTEOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]), Encoder.decode(memory[ip + 5], memory[ip + 6]));
                     break;
+
+                case Operation.CALL:
+                    operation = new CallOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.RET:
+                    operation = new RetOp();
+                    break;
+
                 case Operation.RES:
-                    return new ResOp(Encoder.decode(memory[ip + 1], memory[ip + 2])).exec(this);
+                    operation = new ResOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.PRINT:
+                    operation = new PrintOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
+                case Operation.READ:
+                    operation = new ReadOp(Encoder.decode(memory[ip + 1], memory[ip + 2]));
+                    break;
+
                 default:
                     throw new RuntimeException("Unexpected opcode " + op);
-
             }
+
+            System.out.printf("%4d: %s%n", this.ip, operation.toString());
+            Integer result = operation.exec(this);
+
+            if (result != null)
+                return result;
+
         }
     }
 
+    /**
+     * this changes the IP adressing scheme
+     *
+     * @param enabled if true, ip is only ever increased by 1 instead of the number of INTs an instruction takes
+     */
     public void setInterpreterMode(boolean enabled) {
         interpreterMode = enabled;
     }

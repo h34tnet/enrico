@@ -28,6 +28,11 @@ public class LoadOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 5;
+    }
+
+    @Override
     public String toString() {
         return "load " + register.toString() + " <= mem[" + addr.toString() + "]";
     }

@@ -25,6 +25,11 @@ public class AddOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public String toString() {
         return "add " + target.toString() + " = " + op1.toString() + " + " + op2.toString();
     }

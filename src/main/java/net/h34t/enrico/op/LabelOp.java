@@ -24,12 +24,17 @@ public class LabelOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 0;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return new int[]{};
     }
 
     @Override
     public String toString() {
-        return "res " + label.toString();
+        return label.toString();
     }
 }

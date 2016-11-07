@@ -10,6 +10,22 @@ import java.util.List;
  */
 public class Compiler {
 
+    private boolean enableDebug;
+
+    public static String toString(int[] byteCode) {
+        StringBuilder sb = new StringBuilder();
+
+        for (int code : byteCode)
+            sb.append(code).append(" ");
+
+        return sb.toString();
+    }
+
+    public Compiler enableDebugOutput(boolean enableDebug) {
+        this.enableDebug = enableDebug;
+        return this;
+    }
+
     /**
      * Translates the program into (virtual) machine code.
      *
@@ -18,38 +34,43 @@ public class Compiler {
     public int[] compile(Program program) {
         // first pass gathers the label offsets
         LabelOffsetTranslator lot = new LabelOffsetTranslator();
-        int offset = 1;
+        int offset = 0;
 
         for (Operation op : program.getOperations()) {
-            if (op instanceof LabelOp)
+            if (op instanceof LabelOp) {
                 lot.put((Label) ((LabelOp) op).getLabel(), offset);
-            else
-                offset += op.encode(lot).length;
+            } else {
+                offset += op.length();
+            }
         }
 
         // System.out.println(lot.toString());
 
-        // second pass generates the actual bytecode
-        List<Integer> bytecode = new ArrayList<>();
+        // second pass generates the actual byte code
+        // after applying the label address translation if needed
+        List<Integer> byteCode = new ArrayList<>();
+        offset = 0;
 
         for (Operation op : program.getOperations()) {
             if (op instanceof Operation.AddressTranslator)
                 ((Operation.AddressTranslator) op).translate(lot);
 
-            // int paramCount = op.getClass().getConstructors()[0].getParameterCount();
-            // size += paramCount * 2;
-            int[] encop = op.encode(lot);
-            for (int iop : encop)
-                bytecode.add(iop);
+            int[] encOp = op.encode(lot);
+            for (int iop : encOp) {
+                byteCode.add(iop);
+            }
+
+            offset += encOp.length;
+
+            if (enableDebug)
+                System.out.printf("%d: %s%n", offset, op.toString());
         }
 
-        // add the program size as the first instruction
-        bytecode.add(0, bytecode.size());
-
-        int[] bc = new int[bytecode.size()];
+        int[] bc = new int[byteCode.size()];
         for (int i = 0, ii = bc.length; i < ii; i++)
-            bc[i] = bytecode.get(i);
+            bc[i] = byteCode.get(i);
 
         return bc;
     }
+
 }

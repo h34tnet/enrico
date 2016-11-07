@@ -18,6 +18,11 @@ public class RetOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 1;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, RET);
     }

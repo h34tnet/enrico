@@ -20,6 +20,11 @@ public class MulOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, MUL, a, b, c);
     }

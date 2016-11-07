@@ -20,6 +20,11 @@ public class SubOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, SUB, a, b, c);
     }

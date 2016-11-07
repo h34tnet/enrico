@@ -17,6 +17,11 @@ public class ResOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 3;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, RES, reg);
     }

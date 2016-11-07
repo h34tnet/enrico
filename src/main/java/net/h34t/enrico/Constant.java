@@ -19,7 +19,7 @@ public class Constant implements Ref {
 
     @Override
     public String toString() {
-        return "Const " + value;
+        return "" + value;
     }
 
     @Override

@@ -27,6 +27,10 @@ public class JmpGTEOp implements Operation, Operation.AddressTranslator {
         return Encoder.encode(lot, JMPGTE, label, op1, op2);
     }
 
+    @Override
+    public int length() {
+        return 7;
+    }
 
     @Override
     public String toString() {

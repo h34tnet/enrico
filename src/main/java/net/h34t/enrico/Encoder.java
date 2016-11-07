@@ -34,10 +34,13 @@ public class Encoder {
         switch (type) {
             case 0:
                 return new Constant(value);
+
             case 1:
                 return new Register(value);
+
             case 2:
                 return new Variable(null, value);
+
             default:
                 throw new RuntimeException("failed decoding of type:" + type + ", value: " + value);
         }

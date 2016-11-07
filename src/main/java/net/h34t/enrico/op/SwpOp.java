@@ -23,13 +23,18 @@ public class SwpOp implements Operation {
     }
 
     @Override
+    public int length() {
+        return 5;
+    }
+
+    @Override
     public int[] encode(LabelOffsetTranslator lot) {
         return Encoder.encode(lot, SWP, reg1, reg2);
     }
 
     @Override
     public String toString() {
-        return "swap " + reg1.toString() + " <-> " + reg2.toString();
+        return "swp " + reg1.toString() + " <-> " + reg2.toString();
     }
 
 }

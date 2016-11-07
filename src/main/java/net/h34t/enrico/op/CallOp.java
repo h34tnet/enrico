@@ -26,8 +26,8 @@ public class CallOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
-    public String toString() {
-        return "call " + label.toString();
+    public int length() {
+        return 3;
     }
 
     @Override
@@ -36,4 +36,8 @@ public class CallOp implements Operation, Operation.AddressTranslator {
             label = new Constant(translator.get((Label) label));
     }
 
+    @Override
+    public String toString() {
+        return "call " + label.toString();
+    }
 }

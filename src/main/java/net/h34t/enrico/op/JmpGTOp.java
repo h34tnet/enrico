@@ -28,6 +28,11 @@ public class JmpGTOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
+    public int length() {
+        return 7;
+    }
+
+    @Override
     public String toString() {
         return "jmp to " + label.toString() + " if " + op1.toString() + " > " + op2.toString();
     }
