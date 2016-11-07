@@ -41,6 +41,6 @@ public class JmpLTOp implements Operation, Operation.AddressTranslator {
 
     @Override
     public String toString() {
-        return "jmp to " + label.toString() + " if " + op1.toString() + " < " + op2.toString();
+        return "jmplt to " + label.toString() + " if " + op1.toString() + " < " + op2.toString();
     }
 }

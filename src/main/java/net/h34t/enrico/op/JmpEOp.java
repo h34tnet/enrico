@@ -35,7 +35,7 @@ public class JmpEOp implements Operation, Operation.AddressTranslator {
 
     @Override
     public String toString() {
-        return "jmp to " + label.toString() + " if " + op1.toString() + " = " + op2.toString();
+        return "jmpe to " + label.toString() + " if " + op1.toString() + " = " + op2.toString();
     }
 
     @Override

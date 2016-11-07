@@ -28,6 +28,8 @@ public class VM {
     public int ip = 0, a = 0, b = 0, c = 0, d = 0;
     public boolean interpreterMode = false;
 
+    public boolean debugMode = false;
+
     public VM() {
         this.memSize = 0;
         this.memory = new int[0];
@@ -62,7 +64,7 @@ public class VM {
         this.d = d;
     }
 
-    public VM loadProgram(int[] code) {
+    public VM load(int[] code) {
         System.arraycopy(code, 0, memory, 0, code.length);
         memOffs = code.length;
         return this;
@@ -85,6 +87,17 @@ public class VM {
         sb.append(NL);
 
         return sb.toString();
+    }
+
+    /**
+     * When turned on the VM prints the current statement executed
+     *
+     * @param enabled true to enable debug output
+     * @return this for chaining
+     */
+    public VM enableDebugMode(boolean enabled) {
+        this.debugMode = enabled;
+        return this;
     }
 
     public VM setStackSize(int maxStackSize) {
@@ -218,7 +231,10 @@ public class VM {
                     throw new RuntimeException("Unexpected opcode " + op);
             }
 
-            System.out.printf("%4d: %s%n", this.ip, operation.toString());
+            if (this.debugMode) {
+                System.out.printf("%8d: %-64s%n", this.ip, operation.toString());
+            }
+
             Integer result = operation.exec(this);
 
             if (result != null)

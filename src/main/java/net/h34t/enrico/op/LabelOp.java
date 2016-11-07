@@ -5,6 +5,11 @@ import net.h34t.enrico.Operation;
 import net.h34t.enrico.Ref;
 import net.h34t.enrico.VM;
 
+/**
+ * Defines a target for jmp* operations.
+ * <p>
+ * Note that label doesn't emit byte code - it's converted to a memory offset to jump to during the compile step.
+ */
 public class LabelOp implements Operation {
 
     private final Ref label;

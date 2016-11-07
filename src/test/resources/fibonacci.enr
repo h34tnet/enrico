@@ -1,6 +1,6 @@
 # calculates the nth fibonacci number (0, 1, 1, 2, 3, 5, ...)
 
-load d 0            # the desired fib number is stored here
+read d              # the desired fib number is stored here
 jmpe :def0 d 1      # special cases for 0
 jmpe :def1 d 2      # and 1
 

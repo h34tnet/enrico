@@ -5,8 +5,10 @@ package net.h34t.enrico;
  */
 public interface Operation {
 
-    int SET = 0;
-    int SWP = 1;
+    int NOP = 0;
+
+    int SET = 1;
+    int SWP = 2;
 
     int ADD = 100;
     int SUB = 101;

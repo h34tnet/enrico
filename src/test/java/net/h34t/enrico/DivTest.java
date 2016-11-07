@@ -11,26 +11,24 @@ public class DivTest {
 
     @Test
     public void parseHex() {
-        VM vm = new VM();
-        int res = new Interpreter().run(vm, new Parser().parse("set a 0xFF\nres a"));
-
+        int res = new VM(256).load(new Compiler().compile(new Parser().parse("set a 0xFF\nres a"))).exec();
         assertEquals(255, res);
     }
 
     @Test
     public void parseBinary() {
-        assertEquals(8, (int) new Interpreter().run(new VM(), new Parser().parse("set a b1000\nres a")));
-        assertEquals(0, (int) new Interpreter().run(new VM(), new Parser().parse("set a b0\nres a")));
-        assertEquals(1, (int) new Interpreter().run(new VM(), new Parser().parse("set b b00001\nres b")));
+        assertEquals(8, (int) new VM(256).load(new Compiler().compile(new Parser().parse("set a b1000\nres a"))).exec());
+        assertEquals(0, (int) new VM(256).load(new Compiler().compile(new Parser().parse("set a b0\nres a"))).exec());
+        assertEquals(1, (int) new VM(256).load(new Compiler().compile(new Parser().parse("set b b00001\nres b"))).exec());
     }
 
     @Test
     public void testPrint() {
-        VM vm = new VM(new int[]{'h', 'e', 'l', 'l', 'o', 0});
+        VM vm = new VM(256);
 
         Program p = new Parser().parse(
                 ":loop\n" +
-                        "load a d\n" +
+                        "read a d\n" +
                         "jmpe :exit a 0\n" +
                         "print a\n" +
                         "add d d 1\n" +
@@ -38,10 +36,16 @@ public class DivTest {
                         ":exit\n" +
                         "res 1");
 
+        char[] input = new char[]{'h', 'e', 'l', 'l', 'o', 0};
+
         StringWriter out = new StringWriter();
         vm.setPrintWriter(out);
-        new Interpreter().run(vm, p);
+        vm.setInputReader(new CharReader(input, input.length));
+
+        int res = vm.load(new Compiler().compile(p)).exec();
+
         assertEquals("hello", out.toString());
+        assertEquals(1, res);
     }
 
     @Test

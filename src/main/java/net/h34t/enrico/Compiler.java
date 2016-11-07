@@ -3,7 +3,9 @@ package net.h34t.enrico;
 import net.h34t.enrico.op.LabelOp;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Takes the intermediate representation of a program and turns it into byte code.
@@ -21,6 +23,18 @@ public class Compiler {
         return sb.toString();
     }
 
+    public static String bcDebug(int[] bc) {
+        return Arrays.stream(bc)
+                .mapToObj(b -> String.format("%d", b))
+                .collect(Collectors.joining(", "));
+    }
+
+    /**
+     * Emits the compiled instructions incl. byte code rep
+     *
+     * @param enableDebug true to enable debug output
+     * @return this for chaining
+     */
     public Compiler enableDebugOutput(boolean enableDebug) {
         this.enableDebug = enableDebug;
         return this;
@@ -44,7 +58,9 @@ public class Compiler {
             }
         }
 
-        // System.out.println(lot.toString());
+        if (enableDebug) {
+            System.out.printf("LabelOffsetTranslation table:%n%s%nCompiler output:%n", lot.toString());
+        }
 
         // second pass generates the actual byte code
         // after applying the label address translation if needed
@@ -63,7 +79,7 @@ public class Compiler {
             offset += encOp.length;
 
             if (enableDebug)
-                System.out.printf("%d: %s%n", offset, op.toString());
+                System.out.printf("%8d: %-64s [%s]%n", offset, op.toString(), bcDebug(encOp));
         }
 
         int[] bc = new int[byteCode.size()];
@@ -72,5 +88,4 @@ public class Compiler {
 
         return bc;
     }
-
 }
