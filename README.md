@@ -41,19 +41,43 @@ Currently the VM consists of:
   stack. The `ret` operation pops it and resumes program execution at 
   the next instruction.
 
-## Program
+## Code generation
 
-A program consists of a list of operations, it's practically the AST.
- It removes
+### Parser
+
+Parses valid program text (from a file, stream or string) into a
+program. One operation per line. Empty lines and everything after a
+`#` (comment) is discarded.
+
+### Program
+
+A program consists of a list of operations with parameters in intermediate form,
+it's practically a simple AST.
 
 Most operations have parameters which are either registers, constants,
  variables, variable offsets or labels.
 
-## Parser
+### Compiler & byte code format
 
-Parses valid program text (from a file, stream or string) into a 
-program. One operation per line. Empty lines and everything after a 
-`#` (comment) is discarded.
+The compiler turns the program into byte code. The byte code layout is
+
+1. int: OPCODE (i.e. 1 for SWP)
+2. int: type of first operand
+3. int: value of first operand
+4. int: type of second operand
+5. int: value of second operand
+...
+
+#### Operands
+
+Types:
+
+* 0 = constant; value is the actual int value
+* 1 = register; value is 0 for register A, 1 for register B, ...
+* 2 = variable; value is the address of the variable
+* 3 = variable address; value is the address of the variable
+
+This will be subject to change.
 
 ## Program execution
  
