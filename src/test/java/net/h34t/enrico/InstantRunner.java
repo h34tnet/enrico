@@ -18,6 +18,11 @@ public abstract class InstantRunner {
         return new Compiler().compile(new Parser().parse(source));
     }
 
+    public static int[] c(Program program) {
+        return new Compiler().compile(program);
+    }
+
+
     @Before
     public void runBeforeTestMethod() {
         // prepares a fresh VM before each test

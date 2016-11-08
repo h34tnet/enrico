@@ -25,6 +25,9 @@ public class Encoder {
         } else if (ref instanceof Variable) {
             return 2;
 
+        } else if (ref instanceof Address) {
+            return 3;
+
         } else {
             throw new RuntimeException("Unknown reference type: " + ref.toString());
         }
@@ -40,6 +43,9 @@ public class Encoder {
 
             case 2:
                 return new Variable(null, value);
+
+            case 3:
+                return new Address(null, value);
 
             default:
                 throw new RuntimeException("failed decoding of type:" + type + ", value: " + value);

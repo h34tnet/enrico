@@ -164,6 +164,7 @@ public class Parser {
                             break;
 
                         case "def":
+                            // defines a variable, optionally with a size argument
                             Matcher matcher = PATTERN_VAR.matcher(operands[1]);
                             if (matcher.matches()) {
 
@@ -235,7 +236,7 @@ public class Parser {
 
             } else if (adrMatcher.matches()) {
                 String name = adrMatcher.group(1);
-                return new Constant(getMemOffsetForVariable(name));
+                return new Address(name, getMemOffsetForVariable(name));
 
             } else if (labelMatcher.matches()) {
                 if (!this.referencedLabels.containsKey(token)) {

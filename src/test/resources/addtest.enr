@@ -1,6 +1,9 @@
 # adds up all values in memory until we hit a zero-value
 
-set c 0             # we don't need this, registers are 0 initialized anyway
+def $a              # this is only to mark the beginning of the data area
+
+set c @a            # set the counter to the address of a (the beginning of data)
+print c
 
 :loop
 load d c            # load value of mem-c into d

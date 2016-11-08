@@ -11,6 +11,7 @@ import java.io.IOException;
 public class Interpreter {
 
     public Interpreter() {
+        throw new RuntimeException("The interpreter is deprecated");
     }
 
     private Integer exec(final VM vm, final Operation instruction, final Program program) {
