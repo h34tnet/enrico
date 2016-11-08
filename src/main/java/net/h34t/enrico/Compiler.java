@@ -92,11 +92,14 @@ public class Compiler {
                 byteCode.add(iop);
             }
 
-            offset += encOp.length;
-
             if (enableDebug)
                 System.out.printf("%8d: %-64s [%s]%n", offset, op.toString(), bcDebug(encOp));
+
+            offset += encOp.length;
         }
+
+        if (enableDebug)
+            System.out.println();
 
         int[] bc = new int[byteCode.size()];
         for (int i = 0, ii = bc.length; i < ii; i++)

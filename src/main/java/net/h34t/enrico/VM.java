@@ -149,6 +149,10 @@ public class VM {
     }
 
     public Integer exec() {
+        if (debugMode) {
+            System.out.println("VM exec debug output:");
+        }
+
         while (true) {
             // get the next operation
             int op = memory[ip];

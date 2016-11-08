@@ -22,7 +22,7 @@ public class Variable implements Ref {
 
     @Override
     public String toString() {
-        return "Var " + name + " @ " + offs;
+        return "mem[" + offs + "]";
     }
 
     @Override

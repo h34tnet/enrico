@@ -236,8 +236,15 @@ public class OpTest extends InstantRunner {
 
     @Test
     public void testJmpGTPositive() {
-        int res = compileAndRun(vm, new Parser().parse(
-                "set a 1\nset b 0\njmpgt :win a b\nres 0\n:win\nres 1"));
+        int[] bc = new Compiler()
+                .enableDebugOutput(true)
+                .compile(new Parser().parse(
+                        "def $v\nset $v 1\nset b 0\njmpgt :win $v b\nres 0\n:win\nres 1"));
+
+        int res = vm.load(bc)
+                .enableDebugMode(true)
+                .exec();
+
         assertEquals(1, res);
     }
 

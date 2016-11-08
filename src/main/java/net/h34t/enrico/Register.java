@@ -82,7 +82,7 @@ public class Register implements Ref {
 
     @Override
     public String toString() {
-        return "" + reg.name();
+        return "" + reg.name().toLowerCase();
     }
 
     public enum Reg {A, B, C, D}
