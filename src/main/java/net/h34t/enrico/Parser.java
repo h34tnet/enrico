@@ -5,6 +5,7 @@ import net.h34t.enrico.op.*;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -22,15 +23,19 @@ import java.util.regex.Pattern;
  */
 public class Parser {
 
-    public static final Pattern PATTERN_HEX_CONST = Pattern.compile("0x[0-9a-fA-F]+");
-    public static final Pattern PATTERN_BIN_CONST = Pattern.compile("b[0|1]+");
-    public static final Pattern PATTERN_VARIABLE = Pattern.compile("\\$[a-zA-Z0-9]+");
-    public static final Pattern PATTERN_LABEL = Pattern.compile(":[a-zA-Z0-9]+");
+    public static final Pattern PATTERN_HEX_CONST = Pattern.compile("^0x[0-9a-fA-F]+$");
+    public static final Pattern PATTERN_BIN_CONST = Pattern.compile("^b[0|1]+$");
+    public static final Pattern PATTERN_CHAR_CONST = Pattern.compile("^'.'$");
+    public static final Pattern PATTERN_VAR = Pattern.compile("^\\$([a-zA-Z0-9]+)$");
+    public static final Pattern PATTERN_VAR_ADDR = Pattern.compile("^@([a-zA-Z0-9]+)$");
+    public static final Pattern PATTERN_LABEL = Pattern.compile("^:([a-zA-Z0-9]+)$");
 
     private final Map<String, Label> referencedLabels;
     private final Map<String, Integer> variableOffsets;
 
     private int memCounter = 0;
+    private int lineNumber;
+    private String line;
 
     public Parser() {
         this.referencedLabels = new HashMap<>();
@@ -40,10 +45,11 @@ public class Parser {
     public Program parse(Reader reader) throws IOException {
         Program program = new Program();
         LineNumberReader r = new LineNumberReader(reader);
-        String line, instr;
+        String instr;
 
         while ((line = r.readLine()) != null) {
             line = line.trim();
+            this.lineNumber = r.getLineNumber();
 
             if (!line.isEmpty() && !line.startsWith("#")) {
                 // remove everything after the comment
@@ -158,12 +164,22 @@ public class Parser {
                             break;
 
                         case "def":
-                            // all variable definitions are made here
-                            int size = operands.length > 2
-                                    ? Integer.parseInt(operands[1])
-                                    : 1;
+                            Matcher matcher = PATTERN_VAR.matcher(operands[1]);
+                            if (matcher.matches()) {
 
-                            defineVariable(operands[1], size);
+                                String name = matcher.group(1);
+
+                                // all variable definitions are made here
+                                int size = operands.length > 2
+                                        ? Integer.parseInt(operands[2])
+                                        : 1;
+
+                                defineVariable(name, size);
+
+                            } else {
+                                throw new RuntimeException(
+                                        String.format("Variable definition parse error: %d: %s", lineNumber, line));
+                            }
                             continue;
                     }
 
@@ -199,37 +215,53 @@ public class Parser {
     }
 
     private Ref ref(String token) {
-        if (PATTERN_HEX_CONST.matcher(token).matches()) {
-            return new Constant(Integer.parseInt(token.substring(2), 16));
+        Matcher labelMatcher = PATTERN_LABEL.matcher(token),
+                varMatcher = PATTERN_VAR.matcher(token),
+                adrMatcher = PATTERN_VAR_ADDR.matcher(token);
 
-        } else if (PATTERN_BIN_CONST.matcher(token).matches()) {
-            return new Constant(Integer.parseInt(token.substring(1), 2));
+        try {
+            if (PATTERN_HEX_CONST.matcher(token).matches()) {
+                return new Constant(Integer.parseInt(token.substring(2), 16));
 
-        } else if (PATTERN_VARIABLE.matcher(token).matches()) {
-            return new Variable(token, getMemOffsetForVariable(token));
+            } else if (PATTERN_BIN_CONST.matcher(token).matches()) {
+                return new Constant(Integer.parseInt(token.substring(1), 2));
 
-        } else if (PATTERN_LABEL.matcher(token).matches()) {
+            } else if (PATTERN_CHAR_CONST.matcher(token).matches()) {
+                return new Constant(token.charAt(1));
 
-            if (!this.referencedLabels.containsKey(token)) {
-                Label label = new Label(token);
-                this.referencedLabels.put(token, label);
-                return label;
-            } else
-                return this.referencedLabels.get(token);
-        }
+            } else if (varMatcher.matches()) {
+                String name = varMatcher.group(1);
+                return new Variable(name, getMemOffsetForVariable(name));
 
-        switch (token) {
-            case "a":
-                return new Register(Register.Reg.A);
-            case "b":
-                return new Register(Register.Reg.B);
-            case "c":
-                return new Register(Register.Reg.C);
-            case "d":
-                return new Register(Register.Reg.D);
-            default:
-                int i = Integer.parseInt(token);
-                return new Constant(i);
+            } else if (adrMatcher.matches()) {
+                String name = adrMatcher.group(1);
+                return new Constant(getMemOffsetForVariable(name));
+
+            } else if (labelMatcher.matches()) {
+                if (!this.referencedLabels.containsKey(token)) {
+                    Label label = new Label(token);
+                    this.referencedLabels.put(token, label);
+                    return label;
+                } else
+                    return this.referencedLabels.get(token);
+            }
+
+            switch (token) {
+                case "a":
+                    return new Register(Register.Reg.A);
+                case "b":
+                    return new Register(Register.Reg.B);
+                case "c":
+                    return new Register(Register.Reg.C);
+                case "d":
+                    return new Register(Register.Reg.D);
+                default:
+                    int i = Integer.parseInt(token);
+                    return new Constant(i);
+            }
+
+        } catch (Exception e) {
+            throw new RuntimeException(String.format("Parse error at line %d: %s", lineNumber, line));
         }
     }
 

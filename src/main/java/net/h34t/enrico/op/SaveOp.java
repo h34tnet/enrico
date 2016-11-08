@@ -2,6 +2,9 @@ package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
 
+/**
+ * Writes the value of register to the memory location of addr.
+ */
 public class SaveOp implements Operation {
 
     private final Ref register, addr;

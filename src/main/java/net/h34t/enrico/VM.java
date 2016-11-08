@@ -21,6 +21,7 @@ public class VM {
     public int maxStackSize = 256;
     public int maxCallStackSize = 256;
     public int memOffs;
+    public int loadPtr;
 
     public Writer out = new PrintWriter(System.out);
     public Reader in;
@@ -30,12 +31,13 @@ public class VM {
 
     public boolean debugMode = false;
 
-    public VM() {
-        this.memSize = 0;
-        this.memory = new int[0];
-        this.stack = new Stack<>();
-        this.callStack = new Stack<>();
-    }
+//    public VM() {
+//        this.memSize = 0;
+//        this.memory = new int[0];
+//        this.stack = new Stack<>();
+//        this.callStack = new Stack<>();
+//    }
+
 
     public VM(int memSize) {
         this.memSize = memSize;
@@ -64,9 +66,31 @@ public class VM {
         this.d = d;
     }
 
+    /**
+     * Loads the code into the VMs memory and sets the IP to 0.
+     *
+     * @param code the code to load
+     * @return this for chaining
+     */
     public VM load(int[] code) {
         System.arraycopy(code, 0, memory, 0, code.length);
         memOffs = code.length;
+        loadPtr = code.length;
+        ip = 0;
+        return this;
+    }
+
+    /**
+     * Adds data to the memory's data area (which begins after the code area).
+     * <p>
+     * Note that this doesn't move the initial memPtr.
+     *
+     * @param data the data to be added
+     * @return this for chaining
+     */
+    public VM data(int[] data) {
+        System.arraycopy(data, 0, memory, loadPtr, data.length);
+        loadPtr += data.length;
         return this;
     }
 
@@ -131,6 +155,10 @@ public class VM {
             final Operation operation;
 
             switch (op) {
+                case Operation.NOP:
+                    operation = new NopOp();
+                    break;
+
                 case Operation.SET:
                     operation = new SetOp(Encoder.decode(memory[ip + 1], memory[ip + 2]), Encoder.decode(memory[ip + 3], memory[ip + 4]));
                     break;

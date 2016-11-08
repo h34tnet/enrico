@@ -7,6 +7,7 @@ import java.io.IOException;
 /**
  * The interpreter runs a program.
  */
+@Deprecated
 public class Interpreter {
 
     public Interpreter() {

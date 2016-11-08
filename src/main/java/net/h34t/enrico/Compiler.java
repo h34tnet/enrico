@@ -30,6 +30,22 @@ public class Compiler {
     }
 
     /**
+     * Concatenates two int arrays and returns the resulting one.
+     *
+     * @param code the first one
+     * @param data the second one
+     * @return the resulting array
+     */
+    public static int[] concat(int[] code, int[] data) {
+        int al = code.length;
+        int bl = data.length;
+        int[] res = new int[al + bl];
+        System.arraycopy(code, 0, res, 0, al);
+        System.arraycopy(data, 0, res, al, bl);
+        return res;
+    }
+
+    /**
      * Emits the compiled instructions incl. byte code rep
      *
      * @param enableDebug true to enable debug output
@@ -88,4 +104,5 @@ public class Compiler {
 
         return bc;
     }
+
 }

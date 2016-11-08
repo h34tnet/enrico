@@ -31,7 +31,7 @@ public class SubOp implements Operation {
 
     @Override
     public String toString() {
-        return "add " + a.toString() + " = " + b.toString() + " - " + c.toString();
+        return "sub " + a.toString() + " = " + b.toString() + " - " + c.toString();
     }
 
 }

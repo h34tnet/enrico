@@ -42,4 +42,11 @@ public class CompilationTest {
          int res = vm.exec();
          Assert.assertEquals(12, res);
     }
+
+
+    @Test(expected = RuntimeException.class)
+    public void testJmpFail() {
+        new Compiler().compile(new Parser().parse(":a\njmp :b"));
+    }
+
 }

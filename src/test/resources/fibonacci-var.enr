@@ -11,7 +11,7 @@ jmpe :def0 $it 1    # special cases for 0
 jmpe :def1 $it 2    # and 1
 
 set $cur 2          # initialize the current iteration to 2, because 0 and 1 are special cases
-set $lo 0           # predefine the first two fib nums
+set $lo 0           # predefine the first two fib numbers
 set $hi 1
 
 :loop

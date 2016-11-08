@@ -1,28 +1,17 @@
 package net.h34t.enrico;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
-
-import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-public class OpTest {
-
-    private VM vm;
-
-    @Before
-    public void runBeforeTestMethod() {
-        vm = new VM(0);
-    }
+public class OpTest extends InstantRunner {
 
     @Test
     public void testAdd() {
-        Program program = new Parser().parse("set a 1\nset b 2\nadd c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 1\nset b 2\nadd c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(3, vm.c);
         assertEquals(1, vm.a);
         assertEquals(2, vm.b);
@@ -30,74 +19,86 @@ public class OpTest {
 
     @Test
     public void testSub() {
-        Program program = new Parser().parse("set a 10\nset b 6\nsub c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 10\nset b 6\nsub c a b\nres 0");
+
+        int[] code = new Compiler().enableDebugOutput(true).compile(program);
+
+        vm.load(code).exec();
         assertEquals(4, vm.c);
     }
 
     @Test
     public void testMul() {
-        Program program = new Parser().parse("set a 10\nset b 6\nmul c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 10\nset b 6\nmul c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(60, vm.c);
     }
 
     @Test
     public void testDiv() {
-        Program program = new Parser().parse("set a 20\nset b 10\ndiv c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 20\nset b 10\ndiv c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(2, vm.c);
     }
 
     @Test
     public void testDiv2() {
-        Program program = new Parser().parse("set a 10\nset b 3\ndiv c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 10\nset b 3\ndiv c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(3, vm.c);
     }
 
 
     @Test
     public void testMod() {
-        Program program = new Parser().parse("set a 10\nset b 3\nmod c a b");
-        new Interpreter().run(vm, program);
+        Program program = new Parser().parse("set a 10\nset b 3\nmod c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(1, vm.c);
     }
 
     @Test
     public void testMod2() {
-        new Interpreter().run(vm, new Parser().parse("set a 10\nset b 10\nmod c a b"));
+        Program program = new Parser().parse("set a 10\nset b 10\nmod c a b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
         assertEquals(0, vm.c);
     }
 
     @Test
     public void testPushPop() {
-        new Interpreter().run(vm, new Parser().parse("push 10\npop a"));
+        Program program = new Parser().parse("push 10\npop a\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
+
         assertEquals(10, vm.a);
     }
 
     @Test(expected = RuntimeException.class)
     public void testPopEmpty() {
-        new Interpreter().run(vm, new Parser().parse("pop a"));
+        Program program = new Parser().parse("pop a\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
     }
 
     @Test
     public void testPushPop2() {
-        new Interpreter().run(vm, new Parser().parse("push 10\npush 20\npop a\npop b"));
+        Program program = new Parser().parse("push 10\npush 20\npop a\npop b\nres 0");
+        vm.enableDebugMode(true).load(new Compiler().enableDebugOutput(true).compile(program)).exec();
+
         assertEquals(20, vm.a);
         assertEquals(10, vm.b);
     }
 
     @Test
     public void testPeek() {
-        new Interpreter().run(vm, new Parser().parse("push 10\npeek a\npop b"));
+        Program program = new Parser().parse("push 10\npeek a\npop b\nres 0");
+        vm.load(new Compiler().compile(program)).exec();
+
         assertEquals(10, vm.a);
         assertEquals(10, vm.b);
     }
 
     @Test
     public void testRes() {
-        int res = new Interpreter().run(vm, new Parser().parse("set a 10\nres a"));
+        Program program = new Parser().parse("set a 10\nres a");
+        int res = vm.load(new Compiler().compile(program)).exec();
         assertEquals(10, res);
     }
 
@@ -106,9 +107,10 @@ public class OpTest {
         Program program = new Parser().parse(
                 "set a 1\n" +
                         "set b 2\n" +
-                        "swp a b");
+                        "swp a b\n" +
+                        "res 0");
 
-        new Interpreter().run(vm, program);
+        vm.load(new Compiler().compile(program)).exec();
 
         Assert.assertEquals(2, vm.a);
         Assert.assertEquals(1, vm.b);
@@ -116,133 +118,146 @@ public class OpTest {
 
     @Test
     public void testLoadSave() {
-        VM vm = new VM(new int[]{3, 0});
-        new Interpreter().run(vm, new Parser().parse("load a 0\nsave a 1"));
-        assertEquals(3, vm.a);
-        assertEquals(3, vm.memory[1]);
+        // warning: this overwrites sections of code memory
+        // at the time the code is overwritten it's already executed though,
+        // so this still executes properly
+        VM vm = new VM(256);
+
+        vm.load(c("load a 0\nsave a 1\nres 0")).data(new int[]{3, 0}).exec();
+        assertEquals(200, vm.a);
+        assertEquals(200, vm.memory[1]);
     }
 
     @Test(expected = RuntimeException.class)
     public void testLoadOOMFail() {
-        VM vm = new VM(new int[]{3, 0});
-        new Interpreter().run(vm, new Parser().parse("load a 2"));
+
+        Program program = new Parser().parse("load a 2\nres 0");
+        int[] code = new Compiler().compile(program);
+        int[] data = {3, 0};
+
+        VM vm = new VM(data.length + data.length);
+        vm.load(code)
+                .data(data)
+                .exec();
     }
 
     @Test(expected = RuntimeException.class)
     public void testSaveOOMFail() {
-        VM vm = new VM(new int[]{3, 0});
-        new Interpreter().run(vm, new Parser().parse("save a 2"));
+        // tries to write outside the available memory
+        // the following code needs 10 bytes (0-9) and we try to write one after this one
+
+        int[] bc = c("save a 10\nres 0");
+
+        VM vm = new VM(bc.length + 2);
+
+        assertEquals(10, vm.memSize);
+
+        vm.load(bc)
+                .data(new int[]{3, 0})
+                .exec();
     }
 
 
     @Test
     public void testSet() {
-        VM vm = new VM(new int[]{3, 0});
-        new Interpreter().run(vm, new Parser().parse("set a 3"));
+        compileAndRun(vm, "set a 3\nres 0");
         assertEquals(3, vm.a);
     }
 
     @Test(expected = RuntimeException.class)
     public void testSetConstantIllegal() {
-        VM vm = new VM(new int[]{3, 0});
-        new Interpreter().run(vm, new Parser().parse("set 3 a"));
+        compileAndRun(vm, "set 3 a\nres 0");
     }
 
     @Test
     public void testRes2() {
-        int res = new Interpreter().run(vm, new Parser().parse("res 3"));
+        int res = compileAndRun(vm, "res 3");
         assertEquals(3, res);
     }
 
     @Test
     public void testCallRet() {
-        int res = new Interpreter().run(vm, new Parser().parse(
+        int res = compileAndRun(vm,
                 "call :a\n" +
                         "res a\n" +
                         ":a\n" +
                         "set a 3\n" +
-                        "ret"));
+                        "ret");
 
         assertEquals(3, res);
     }
 
     @Test
     public void testCallRet2() {
-        int res = new Interpreter().run(vm, new Parser().parse(
-                "call :foo\nres a\n:foo\ncall :bar\nret\n:bar\nset a 3\nret"));
+        int res = compileAndRun(vm, "call :foo\nres a\n:foo\ncall :bar\nret\n:bar\nset a 3\nret");
 
         assertEquals(3, res);
     }
 
     @Test
     public void testJmp() {
-        Integer res = new Interpreter().run(vm, new Parser().parse(
+        Integer res = compileAndRun(vm,
                 "jmp :a\n" +
                         "res 1\n" +
                         ":a\n" +
-                        "res 3\n"));
+                        "res 3\n");
 
         assertEquals(new Integer(3), res);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void testJmpFail() {
-        new Interpreter().run(vm, new Parser().parse(
-                ":a\njmp :b\n"));
-    }
-
     @Test
     public void testJmpEPositive() {
-        int res = new Interpreter().run(vm, new Parser().parse(
-                "set a 1\nset b 1\njmpe :win a b\nres 0\n:win\nres 1"));
+        int res = compileAndRun(vm,
+                "set a 1\nset b 1\njmpe :win a b\nres 0\n:win\nres 1");
+
         assertEquals(1, res);
     }
 
     @Test
     public void testJmpENegative() {
-        int res = new Interpreter().run(vm, new Parser().parse(
-                "set a 1\nset b 0\njmpe :win a b\nres 0\n:win\nres 1"));
+        int res = compileAndRun(vm,
+                "set a 1\nset b 0\njmpe :win a b\nres 0\n:win\nres 1");
         assertEquals(0, res);
     }
 
     @Test
     public void testJmpNEPositive() {
-        int res = new Interpreter().run(vm, new Parser().parse(
-                "set a 1\nset b 1\njmpne :win a b\nres 0\n:win\nres 1"));
+        int res = compileAndRun(vm,
+                "set a 1\nset b 1\njmpne :win a b\nres 0\n:win\nres 1");
         assertEquals(0, res);
     }
 
     @Test
     public void testJmpNENegative() {
-        int res = new Interpreter().run(vm, new Parser().parse(
-                "set a 1\nset b 0\njmpne :win a b\nres 0\n:win\nres 1"));
+        int res = compileAndRun(vm,
+                "set a 1\nset b 0\njmpne :win a b\nres 0\n:win\nres 1");
         assertEquals(1, res);
     }
 
     @Test
     public void testJmpGTPositive() {
-        int res = new Interpreter().run(vm, new Parser().parse(
+        int res = compileAndRun(vm, new Parser().parse(
                 "set a 1\nset b 0\njmpgt :win a b\nres 0\n:win\nres 1"));
         assertEquals(1, res);
     }
 
     @Test
     public void testJmpGTNegative() {
-        int res = new Interpreter().run(vm, new Parser().parse(
+        int res = compileAndRun(vm, new Parser().parse(
                 "set a 1\nset b 0\njmpgt :win b a\nres 0\n:win\nres 1"));
         assertEquals(0, res);
     }
 
     @Test
     public void testJmpLTPositive() {
-        int res = new Interpreter().run(vm, new Parser().parse(
+        int res = compileAndRun(vm, new Parser().parse(
                 "set a 1\nset b 0\njmplt :win a b\nres 0\n:win\nres 1"));
         assertEquals(0, res);
     }
 
     @Test
     public void testJmpLTNegative() {
-        int res = new Interpreter().run(vm, new Parser().parse(
+        int res = compileAndRun(vm, new Parser().parse(
                 "set a 1\nset b 0\njmplt :win b a\nres 0\n:win\nres 1"));
         assertEquals(1, res);
     }
@@ -291,8 +306,8 @@ public class OpTest {
 
     @Test
     public void testSetAllRegisters() {
-        new Interpreter().run(vm, new Parser().parse(
-                "set a 1\nset b 2\nset c 3\nset d 4"));
+        compileAndRun(vm, new Parser().parse(
+                "set a 1\nset b 2\nset c 3\nset d 4\nres 0"));
 
         assertEquals(1, vm.a);
         assertEquals(2, vm.b);
@@ -302,90 +317,55 @@ public class OpTest {
 
     @Test
     public void testReadAllRegisters() {
-        int resa = new Interpreter().run(new VM(), new Parser().parse("set a 1\nres a"));
-        assertEquals(1, resa);
-        int resb = new Interpreter().run(new VM(), new Parser().parse("set b 1\nres b"));
+        assertEquals(1, (int) compileAndRun(new VM(128), "set a 1\nres a"));
+        int resb = compileAndRun(new VM(128), new Parser().parse("set b 1\nres b"));
         assertEquals(1, resb);
-        int resc = new Interpreter().run(new VM(), new Parser().parse("set c 1\nres c"));
+        int resc = compileAndRun(new VM(128), new Parser().parse("set c 1\nres c"));
         assertEquals(1, resc);
-        int resd = new Interpreter().run(new VM(), new Parser().parse("set d 1\nres d"));
+        int resd = compileAndRun(new VM(128), new Parser().parse("set d 1\nres d"));
         assertEquals(1, resd);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testInterpreterExceedsMaxSteps() {
-        int resa = new Interpreter().run(new VM(), new Parser().parse("set a 1\nset b 2"), 1);
-        assertEquals(1, resa);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testParserInvalidOp() {
-        new Parser().parse("foo");
-    }
-
-    @Test(expected = IOException.class)
-    public void testParserFile() throws IOException {
-        new Parser().parse(new File("boo"));
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testParser1() throws IOException {
-        new Parser().parse("set foo bar");
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testParser2() throws IOException {
-        new Parser().parse("set bar 45.23");
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void testParser3() throws IOException {
-        new Parser().parse("set a");
-    }
-
-    @Test
-    public void testParserComment() throws IOException {
-        new Parser().parse("# hello world\n\nset a 1 # inc\nset b 2 #help\n");
     }
 
     @Test(expected = RuntimeException.class)
     public void testInvalidRegister() {
         Register r = new Register(null);
-        r.getValue(new VM());
+        r.getValue(new VM(0));
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRegister2() {
         Register r = new Register(null);
-        r.setValue(new VM(), 0);
+        r.setValue(new VM(0), 0);
     }
 
+    // TODO remove native stack
     @Test(expected = RuntimeException.class)
     public void testStackOverflow() {
-        VM vm = new VM().setStackSize(0);
-        Program p = new Parser().parse("push 1");
-        new Interpreter().run(vm, p);
+        VM vm = new VM(128).setStackSize(0);
+        Program p = new Parser().parse("push 1\nres 0");
+        compileAndRun(vm, p);
     }
 
+    // TODO remove native stack
     @Test(expected = RuntimeException.class)
     public void testStackOverflow2() {
-        VM vm = new VM().setStackSize(1);
-        Program p = new Parser().parse("push 1\npush 2");
-        new Interpreter().run(vm, p);
+        VM vm = new VM(128).setStackSize(1);
+        Program p = new Parser().parse("push 1\npush 2\nres 0");
+        compileAndRun(vm, p);
     }
 
     @Test(expected = RuntimeException.class)
     public void testCallStackOverflow() {
-        VM vm = new VM().setCallStackSize(0);
-        Program p = new Parser().parse("call :foo\n:foo\nret");
-        new Interpreter().run(vm, p);
+        VM vm = new VM(128).setCallStackSize(0);
+        Program p = new Parser().parse("call :foo\n:foo\nret\nres 0");
+        compileAndRun(vm, p);
     }
 
     @Test(expected = RuntimeException.class)
     public void testCallStackOverflow2() {
-        VM vm = new VM().setCallStackSize(1);
-        Program p = new Parser().parse("call :foo\n:foo\ncall :bar\nret\n:bar\nret");
-        new Interpreter().run(vm, p);
+        VM vm = new VM(128).setCallStackSize(1);
+        Program p = new Parser().parse("call :foo\n:foo\ncall :bar\nret\n:bar\nret\nres 0");
+        compileAndRun(vm, p);
     }
 }
