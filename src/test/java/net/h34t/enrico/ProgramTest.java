@@ -1,9 +1,9 @@
 package net.h34t.enrico;
 
-import com.sun.xml.internal.messaging.saaj.util.CharReader;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -42,16 +42,16 @@ public class ProgramTest extends InstantRunner {
                 new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci.enr")));
 
         // special cases
-        Assert.assertEquals(0, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{1}, 1)).exec());
-        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{2}, 1)).exec());
-        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{3}, 1)).exec());
-        Assert.assertEquals(2, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{4}, 1)).exec());
+        Assert.assertEquals(0, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{1})).exec());
+        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{2})).exec());
+        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{3})).exec());
+        Assert.assertEquals(2, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{4})).exec());
 
         // the 7th fibonacci number should be 8
-        Assert.assertEquals(8, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{7}, 1)).exec());
+        Assert.assertEquals(8, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{7})).exec());
 
         // the 13th fibonacci number should be 144
-        Assert.assertEquals(144, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{13}, 1)).exec());
+        Assert.assertEquals(144, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{13})).exec());
     }
 
     @Test
@@ -60,16 +60,16 @@ public class ProgramTest extends InstantRunner {
                 new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci-var.enr")));
 
         // special cases
-        Assert.assertEquals(0, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{1}, 1)).exec());
-        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{2}, 1)).exec());
-        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{3}, 1)).exec());
-        Assert.assertEquals(2, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{4}, 1)).exec());
+        Assert.assertEquals(0, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{1})).exec());
+        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{2})).exec());
+        Assert.assertEquals(1, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{3})).exec());
+        Assert.assertEquals(2, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{4})).exec());
 
         // the 7th fibonacci number should be 8
-        Assert.assertEquals(8, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{7}, 1)).exec());
+        Assert.assertEquals(8, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{7})).exec());
 
         // the 13th fibonacci number should be 144
-        Assert.assertEquals(144, (int) vm.load(c(p)).setInputReader(new CharReader(new char[]{13}, 1)).exec());
+        Assert.assertEquals(144, (int) vm.load(c(p)).setInputReader(new CharArrayReader(new char[]{13})).exec());
     }
 
 }

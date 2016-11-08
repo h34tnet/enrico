@@ -39,8 +39,8 @@ public class CompilationTest {
 
         VM vm = new VM(256);
         vm.load(byteCode);
-         int res = vm.exec();
-         Assert.assertEquals(12, res);
+        int res = vm.exec();
+        Assert.assertEquals(12, res);
     }
 
 

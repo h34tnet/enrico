@@ -1,9 +1,9 @@
 package net.h34t.enrico;
 
-import com.sun.xml.internal.messaging.saaj.util.CharReader;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -15,7 +15,7 @@ public class FibonacciRegTest {
                 .parse(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci.enr")));
 
         VM vm = new VM(1024);
-        vm.setInputReader(new CharReader(new char[]{13}, 1));
+        vm.setInputReader(new CharArrayReader(new char[]{13}));
 
         int[] bc = new Compiler()
                 .enableDebugOutput(false)
@@ -32,7 +32,7 @@ public class FibonacciRegTest {
                 .parse(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("fibonacci-var.enr")));
 
         VM vm = new VM(1024);
-        vm.setInputReader(new CharReader(new char[]{13}, 1));
+        vm.setInputReader(new CharArrayReader(new char[]{13}));
 
         int[] bc = new Compiler()
                 .enableDebugOutput(false)

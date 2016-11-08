@@ -1,8 +1,8 @@
 package net.h34t.enrico;
 
-import com.sun.xml.internal.messaging.saaj.util.CharReader;
 import org.junit.Test;
 
+import java.io.CharArrayReader;
 import java.io.StringWriter;
 
 import static org.junit.Assert.assertEquals;
@@ -26,7 +26,7 @@ public class IOTest {
 
         StringWriter out = new StringWriter();
         vm.setPrintWriter(out);
-        vm.setInputReader(new CharReader(input, input.length));
+        vm.setInputReader(new CharArrayReader(input));
         int res = vm.load(new Compiler().compile(p)).exec();
         assertEquals("hello world", out.toString());
         assertEquals(1, res);
