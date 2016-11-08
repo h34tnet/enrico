@@ -15,7 +15,9 @@ public class CallOp implements Operation, Operation.AddressTranslator {
         if (vm.callStack.size() >= vm.maxCallStackSize)
             throw new RuntimeException("Call Stack size exceeded");
 
-        vm.callStack.push(vm.ip + (vm.interpreterMode ? 1 : 3));
+        // return to the instruction after the call
+        vm.callStack.push(vm.ip + 3);
+
         vm.ip = label.getValue(vm);
         return null;
     }

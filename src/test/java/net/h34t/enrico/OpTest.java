@@ -21,7 +21,7 @@ public class OpTest extends InstantRunner {
     public void testSub() {
         Program program = new Parser().parse("set a 10\nset b 6\nsub c a b\nres 0");
 
-        int[] code = new Compiler().enableDebugOutput(true).compile(program);
+        int[] code = new Compiler().compile(program);
 
         vm.load(code).exec();
         assertEquals(4, vm.c);
@@ -80,7 +80,7 @@ public class OpTest extends InstantRunner {
     @Test
     public void testPushPop2() {
         Program program = new Parser().parse("push 10\npush 20\npop a\npop b\nres 0");
-        vm.enableDebugMode(true).load(new Compiler().enableDebugOutput(true).compile(program)).exec();
+        vm.load(new Compiler().compile(program)).exec();
 
         assertEquals(20, vm.a);
         assertEquals(10, vm.b);
@@ -237,12 +237,10 @@ public class OpTest extends InstantRunner {
     @Test
     public void testJmpGTPositive() {
         int[] bc = new Compiler()
-                .enableDebugOutput(true)
                 .compile(new Parser().parse(
                         "def $v\nset $v 1\nset b 0\njmpgt :win $v b\nres 0\n:win\nres 1"));
 
         int res = vm.load(bc)
-                .enableDebugMode(true)
                 .exec();
 
         assertEquals(1, res);
@@ -299,10 +297,11 @@ public class OpTest extends InstantRunner {
     @Test
     public void testVMNext() {
         VM vm = new VM(new int[0]);
-        vm.setInterpreterMode(true);
-        vm.next(1);
-        vm.next(1);
-        assertEquals(2, vm.ip);
+        // one parameter
+        vm.next(1); // moves ip 1 + 1*2 slots
+        vm.next(2); // 1 + 2*2
+        vm.next(0); // 1 + 0*2
+        assertEquals(9, vm.ip);
     }
 
     @Test
@@ -346,7 +345,6 @@ public class OpTest extends InstantRunner {
         r.setValue(new VM(0), 0);
     }
 
-    // TODO remove native stack
     @Test(expected = RuntimeException.class)
     public void testStackOverflow() {
         VM vm = new VM(128).setStackSize(0);
@@ -354,7 +352,6 @@ public class OpTest extends InstantRunner {
         compileAndRun(vm, p);
     }
 
-    // TODO remove native stack
     @Test(expected = RuntimeException.class)
     public void testStackOverflow2() {
         VM vm = new VM(128).setStackSize(1);

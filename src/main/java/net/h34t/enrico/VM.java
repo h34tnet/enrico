@@ -17,7 +17,7 @@ public class VM {
     public final Stack<Integer> stack;
     public final Stack<Integer> callStack;
     public final int memSize;
-    public int[] memory;
+    public final int[] memory;
     public int maxStackSize = 256;
     public int maxCallStackSize = 256;
     public int memOffs;
@@ -27,7 +27,6 @@ public class VM {
     public Reader in;
 
     public int ip = 0, a = 0, b = 0, c = 0, d = 0;
-    public boolean interpreterMode = false;
 
     public boolean debugMode = false;
 
@@ -145,7 +144,7 @@ public class VM {
     }
 
     public void next(int params) {
-        ip += interpreterMode ? 1 : 1 + params * 2;
+        ip += 1 + params * 2;
     }
 
     public Integer exec() {
@@ -274,14 +273,4 @@ public class VM {
 
         }
     }
-
-    /**
-     * this changes the IP adressing scheme
-     *
-     * @param enabled if true, ip is only ever increased by 1 instead of the number of INTs an instruction takes
-     */
-    public void setInterpreterMode(boolean enabled) {
-        interpreterMode = enabled;
-    }
-
 }

@@ -15,10 +15,10 @@ public class ProgramTest extends InstantRunner {
         Program p = new Parser().parse(
                 new InputStreamReader(getClass().getClassLoader().getResourceAsStream("addtest.enr")));
 
-        int[] bc = new Compiler().enableDebugOutput(true).compile(p);
+        int[] bc = new Compiler().enableDebugOutput(false).compile(p);
 
-        int res = vm.load(c(p))
-                .enableDebugMode(true)
+        int res = vm.load(bc)
+                .enableDebugMode(false)
                 .setPrintWriter(new PrintWriter(System.out))
                 .data(new int[]{1, 2, 3, 4, 5, 0, 1, 2, 3}).exec();
 

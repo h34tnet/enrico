@@ -18,7 +18,7 @@ public class FibonacciRegTest {
         vm.setInputReader(new CharReader(new char[]{13}, 1));
 
         int[] bc = new Compiler()
-                .enableDebugOutput(true)
+                .enableDebugOutput(false)
                 .compile(program);
 
         vm.load(bc);
@@ -35,7 +35,7 @@ public class FibonacciRegTest {
         vm.setInputReader(new CharReader(new char[]{13}, 1));
 
         int[] bc = new Compiler()
-                .enableDebugOutput(true)
+                .enableDebugOutput(false)
                 .compile(program);
 
         vm.load(bc);
