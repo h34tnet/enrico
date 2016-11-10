@@ -7,7 +7,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class FibonacciRegTest {
+public class FibonacciRTest {
 
     @Test
     public void runFibonacciTest() throws IOException {

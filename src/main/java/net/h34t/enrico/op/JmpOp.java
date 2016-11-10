@@ -1,11 +1,12 @@
 package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
+import net.h34t.enrico.Compiler;
 
 /**
  * Unconditional jump
  */
-public class JmpOp implements Operation, Operation.AddressTranslator {
+public class JmpOp implements Operation, Compiler.AddressTranslator {
 
     private Ref label;
 
@@ -20,7 +21,7 @@ public class JmpOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
-    public int[] encode(LabelOffsetTranslator lot) {
+    public int[] encode(Compiler lot) {
         return Encoder.encode(lot, JMP, label);
     }
 
@@ -37,6 +38,6 @@ public class JmpOp implements Operation, Operation.AddressTranslator {
     @Override
     public void translate(LabelOffsetTranslator translator) {
         if (label instanceof Label)
-            label = new Constant(translator.get((Label) label));
+            label = new Const(translator.get((Label) label));
     }
 }

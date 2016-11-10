@@ -1,6 +1,7 @@
 package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
+import net.h34t.enrico.Compiler;
 
 public class AddOp implements Operation {
 
@@ -20,8 +21,8 @@ public class AddOp implements Operation {
     }
 
     @Override
-    public int[] encode(LabelOffsetTranslator lot) {
-        return Encoder.encode(lot, ADD, target, op1, op2);
+    public int[] encode(Compiler lot) {
+        return Encoder.encode(ADD, target, op1, op2);
     }
 
     @Override

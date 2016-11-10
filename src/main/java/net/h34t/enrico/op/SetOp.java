@@ -1,12 +1,13 @@
 package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
+import net.h34t.enrico.Compiler;
 
 public class SetOp implements Operation {
 
-    private final Ref a, b;
+    private final Reg a, b;
 
-    public SetOp(Ref a, Ref b) {
+    public SetOp(Reg a, Reg b) {
         this.a = a;
         this.b = b;
     }
@@ -25,7 +26,7 @@ public class SetOp implements Operation {
     }
 
     @Override
-    public int[] encode(LabelOffsetTranslator lot) {
+    public int[] encode(Compiler lot) {
         return Encoder.encode(lot, SET, a, b);
     }
 

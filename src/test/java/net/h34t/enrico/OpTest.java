@@ -334,14 +334,14 @@ public class OpTest extends InstantRunner {
 
     @Test(expected = RuntimeException.class)
     public void testInvalidRegister() {
-        Register r = new Register(null);
+        Reg r = new Reg(null);
         r.getValue(new VM(0));
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testInvalidRegister2() {
-        Register r = new Register(null);
+        Reg r = new Reg(null);
         r.setValue(new VM(0), 0);
     }
 

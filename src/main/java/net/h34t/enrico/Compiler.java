@@ -1,10 +1,9 @@
 package net.h34t.enrico;
 
+import net.h34t.enrico.op.DefOp;
 import net.h34t.enrico.op.LabelOp;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -12,7 +11,25 @@ import java.util.stream.Collectors;
  */
 public class Compiler {
 
+    /**
+     * var offset table: stores memory addresses of variables
+     * <p>
+     * memory addresses can be calculated after gathering the size of the code segment
+     */
+    final Map<String, VariableDefinition> vot;
+
+    /**
+     * label offset table: stores memory addresses of label locations
+     */
+    final Map<String, Integer> lot;
+
     private boolean enableDebug;
+
+
+    public Compiler() {
+        this.vot = new HashMap<>();
+        this.lot = new HashMap<>();
+    }
 
     public static String toString(int[] byteCode) {
         StringBuilder sb = new StringBuilder();
@@ -62,40 +79,47 @@ public class Compiler {
      * @return the emitted machine code
      */
     public int[] compile(Program program) {
-        // first pass gathers the label offsets
-        LabelOffsetTranslator lot = new LabelOffsetTranslator();
-        int offset = 0;
+        int insOffset = 0;
+        int memOffset = 0;
 
         for (Operation op : program.getOperations()) {
             if (op instanceof LabelOp) {
-                lot.put((Label) ((LabelOp) op).getLabel(), offset);
+                lot.put(((LabelOp) op).getLabel(), insOffset);
+
+            } else if (op instanceof DefOp) {
+                DefOp defOp = (DefOp) op;
+                vot.put(defOp.getName(), new VariableDefinition(defOp.getName(), defOp.getSize(), memOffset));
+                memOffset += defOp.getSize();
+
             } else {
-                offset += op.length();
+                // mock encoding to get the size
+                // this is constant for each operator, so this wouldn't be *needed*
+                // but currently i'm too lazy to build and maintain a table by hand
+                insOffset += op.encode(this).length;
             }
         }
 
         if (enableDebug) {
+            System.out.printf("Calculated program length: " + insOffset);
+
             System.out.printf("LabelOffsetTranslation table:%n%s%nCompiler output:%n", lot.toString());
         }
 
-        // second pass generates the actual byte code
+        // the second pass is about variable memory allocation
+
+
+        // third pass generates the actual byte code
         // after applying the label address translation if needed
         List<Integer> byteCode = new ArrayList<>();
-        offset = 0;
 
         for (Operation op : program.getOperations()) {
-            if (op instanceof Operation.AddressTranslator)
-                ((Operation.AddressTranslator) op).translate(lot);
-
-            int[] encOp = op.encode(lot);
+            int[] encOp = op.encode(this);
             for (int iop : encOp) {
                 byteCode.add(iop);
             }
 
             if (enableDebug)
-                System.out.printf("%8d: %-64s [%s]%n", offset, op.toString(), bcDebug(encOp));
-
-            offset += encOp.length;
+                System.out.printf("%8d: %-64s [%s]%n", insOffset, op.toString(), bcDebug(encOp));
         }
 
         if (enableDebug)
@@ -106,6 +130,27 @@ public class Compiler {
             bc[i] = byteCode.get(i);
 
         return bc;
+    }
+
+    public int getVarAddr(String varname) {
+        return vot.get(varname).memOffset;
+    }
+
+    public interface AddressTranslator {
+        void translate(LabelOffsetTranslator translator);
+    }
+
+    private class VariableDefinition {
+
+        public final String name;
+        public final int size;
+        public int memOffset;
+
+        public VariableDefinition(String name, int size, int memOffset) {
+            this.name = name;
+            this.size = size;
+            this.memOffset = memOffset;
+        }
     }
 
 }

@@ -1,27 +1,27 @@
 package net.h34t.enrico;
 
-public class Register implements Ref {
+public class Reg implements Ref {
 
-    private final Reg reg;
+    private final R r;
 
-    public Register(Reg reg) {
-        if (reg == null) throw new IllegalArgumentException("Invalid register");
-        this.reg = reg;
+    public Reg(R r) {
+        if (r == null) throw new IllegalArgumentException("Invalid register");
+        this.r = r;
     }
 
-    public Register(int reg) {
+    public Reg(int reg) {
         switch (reg) {
             case 0:
-                this.reg = Reg.A;
+                this.r = R.A;
                 break;
             case 1:
-                this.reg = Reg.B;
+                this.r = R.B;
                 break;
             case 2:
-                this.reg = Reg.C;
+                this.r = R.C;
                 break;
             case 3:
-                this.reg = Reg.D;
+                this.r = R.D;
                 break;
             default:
                 throw new RuntimeException("Unknown register #" + reg);
@@ -30,7 +30,7 @@ public class Register implements Ref {
 
     @Override
     public int getValue(VM vm) {
-        switch (reg) {
+        switch (r) {
             case A:
                 return vm.a;
             case B:
@@ -40,13 +40,13 @@ public class Register implements Ref {
             case D:
                 return vm.d;
             default:
-                throw new RuntimeException("unknown register \"" + reg.toString() + "\"");
+                throw new RuntimeException("unknown register \"" + r.toString() + "\"");
         }
     }
 
     @Override
     public void setValue(VM vm, int val) {
-        switch (reg) {
+        switch (r) {
             case A:
                 vm.a = val;
                 break;
@@ -60,13 +60,13 @@ public class Register implements Ref {
                 vm.d = val;
                 break;
             default:
-                throw new RuntimeException("unknown register \"" + reg.toString() + "\"");
+                throw new RuntimeException("unknown register \"" + r.toString() + "\"");
         }
     }
 
     @Override
-    public int encode(LabelOffsetTranslator lot) {
-        switch (reg) {
+    public int encode() {
+        switch (r) {
             case A:
                 return 0;
             case B:
@@ -76,14 +76,14 @@ public class Register implements Ref {
             case D:
                 return 3;
             default:
-                throw new RuntimeException("unknown register \"" + reg.toString() + "\"");
+                throw new RuntimeException("unknown register \"" + r.toString() + "\"");
         }
     }
 
     @Override
     public String toString() {
-        return "" + reg.name().toLowerCase();
+        return "" + r.name().toLowerCase();
     }
 
-    public enum Reg {A, B, C, D}
+    public enum R {A, B, C, D}
 }

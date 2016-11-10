@@ -1,10 +1,11 @@
 package net.h34t.enrico;
 
-public class Constant implements Ref {
+@Deprecated
+public class Const implements Ref {
 
     private final int value;
 
-    public Constant(int value) {
+    public Const(int value) {
         this.value = value;
     }
 
@@ -23,7 +24,7 @@ public class Constant implements Ref {
     }
 
     @Override
-    public int encode(LabelOffsetTranslator lot) {
+    public int encode() {
         return value;
     }
 }

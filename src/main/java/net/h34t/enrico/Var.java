@@ -1,11 +1,11 @@
 package net.h34t.enrico;
 
-public class Variable implements Ref {
+public class Var implements Ref {
 
     public final String name;
     public final int offs;
 
-    public Variable(String name, int offs) {
+    public Var(String name, int offs) {
         this.name = name;
         this.offs = offs;
     }
@@ -26,7 +26,7 @@ public class Variable implements Ref {
     }
 
     @Override
-    public int encode(LabelOffsetTranslator lot) {
+    public int encode() {
         return offs;
     }
 }

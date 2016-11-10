@@ -3,8 +3,6 @@ package net.h34t.enrico;
 import net.h34t.enrico.op.*;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,16 +28,10 @@ public class Parser {
     public static final Pattern PATTERN_VAR_ADDR = Pattern.compile("^@([a-zA-Z0-9]+)$");
     public static final Pattern PATTERN_LABEL = Pattern.compile("^:([a-zA-Z0-9]+)$");
 
-    private final Map<String, Label> referencedLabels;
-    private final Map<String, Integer> variableOffsets;
-
-    private int memCounter = 0;
     private int lineNumber;
     private String line;
 
     public Parser() {
-        this.referencedLabels = new HashMap<>();
-        this.variableOffsets = new HashMap<>();
     }
 
     public Program parse(Reader reader) throws IOException {
@@ -63,44 +55,44 @@ public class Parser {
                     Operation op = null;
 
                     if (PATTERN_LABEL.matcher(instr).matches()) {
-                        op = new LabelOp(ref(operands[0]));
+                        op = new LabelOp(operands[0]);
                     }
 
                     switch (operands[0]) {
                         case "set":
-                            op = new SetOp(ref(operands[1]), ref(operands[2]));
+                            op = new SetOp(reg(operands[1]), reg(operands[2]));
                             break;
 
                         case "add":
-                            op = new AddOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new AddOp(reg(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "sub":
-                            op = new SubOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new SubOp(reg(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "mul":
-                            op = new MulOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new MulOp(reg(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "div":
-                            op = new DivOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new DivOp(reg(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "mod":
-                            op = new ModOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new ModOp(reg(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "res":
-                            op = new ResOp(ref(operands[1]));
+                            op = new ResOp(reg(operands[1]));
                             break;
 
                         case "load":
-                            op = new LoadOp(ref(operands[1]), ref(operands[2]));
+                            op = new LoadOp(reg(operands[1]), operands[2]);
                             break;
 
                         case "save":
-                            op = new SaveOp(ref(operands[1]), ref(operands[2]));
+                            op = new SaveOp(reg(operands[1]), operands[2]);
                             break;
 
                         case "jmp":
@@ -108,43 +100,43 @@ public class Parser {
                             break;
 
                         case "jmpgt":
-                            op = new JmpGTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpGTOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "jmpgte":
-                            op = new JmpGTEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpGTEOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "jmplt":
-                            op = new JmpLTOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpLTOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "jmplte":
-                            op = new JmpLTEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpLTEOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "jmpe":
-                            op = new JmpEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpEOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "jmpne":
-                            op = new JmpNEOp(ref(operands[1]), ref(operands[2]), ref(operands[3]));
+                            op = new JmpNEOp(ref(operands[1]), reg(operands[2]), reg(operands[3]));
                             break;
 
                         case "swp":
-                            op = new SwpOp(ref(operands[1]), ref(operands[2]));
+                            op = new SwpOp(reg(operands[1]), reg(operands[2]));
                             break;
 
                         case "push":
-                            op = new PushOp(ref(operands[1]));
+                            op = new PushOp(reg(operands[1]));
                             break;
 
                         case "pop":
-                            op = new PopOp(ref(operands[1]));
+                            op = new PopOp(reg(operands[1]));
                             break;
 
                         case "peek":
-                            op = new PeekOp(ref(operands[1]));
+                            op = new PeekOp(reg(operands[1]));
                             break;
 
                         case "call":
@@ -156,11 +148,11 @@ public class Parser {
                             break;
 
                         case "print":
-                            op = new PrintOp(ref(operands[1]));
+                            op = new PrintOp(reg(operands[1]));
                             break;
 
                         case "read":
-                            op = new ReadOp(ref(operands[1]));
+                            op = new ReadOp(reg(operands[1]));
                             break;
 
                         case "def":
@@ -175,19 +167,20 @@ public class Parser {
                                         ? Integer.parseInt(operands[2])
                                         : 1;
 
-                                defineVariable(name, size);
+                                op = new DefOp(name, size);
+                                // defineVariable(name, size);
 
                             } else {
                                 throw new RuntimeException(
                                         String.format("Variable definition parse error: %d: %s", lineNumber, line));
                             }
-                            continue;
+                            break;
                     }
 
                     if (op != null) {
                         program.add(op);
                     } else {
-                        throw new RuntimeException("Unknown operation \"" + line + "\" at " + r.getLineNumber());
+                        throw new RuntimeException(String.format("Parse error at %d: %s", lineNumber, line));
                     }
 
                 } catch (NumberFormatException a) {
@@ -222,65 +215,69 @@ public class Parser {
 
         try {
             if (PATTERN_HEX_CONST.matcher(token).matches()) {
-                return new Constant(Integer.parseInt(token.substring(2), 16));
+                return new Const(Integer.parseInt(token.substring(2), 16));
 
             } else if (PATTERN_BIN_CONST.matcher(token).matches()) {
-                return new Constant(Integer.parseInt(token.substring(1), 2));
+                return new Const(Integer.parseInt(token.substring(1), 2));
 
             } else if (PATTERN_CHAR_CONST.matcher(token).matches()) {
-                return new Constant(token.charAt(1));
+                return new Const(token.charAt(1));
 
             } else if (varMatcher.matches()) {
                 String name = varMatcher.group(1);
-                return new Variable(name, getMemOffsetForVariable(name));
+                // return new Variable(name, getMemOffsetForVariable(name));
+                return new Var(name, 0);
 
             } else if (adrMatcher.matches()) {
                 String name = adrMatcher.group(1);
-                return new Address(name, getMemOffsetForVariable(name));
+                return new Addr(name, 0);
 
-            } else if (labelMatcher.matches()) {
-                if (!this.referencedLabels.containsKey(token)) {
-                    Label label = new Label(token);
-                    this.referencedLabels.put(token, label);
-                    return label;
-                } else
-                    return this.referencedLabels.get(token);
             }
+//            else if (labelMatcher.matches()) {
+//                if (!this.referencedLabels.containsKey(token)) {
+//                    Label label = new Label(token);
+//                    this.referencedLabels.put(token, label);
+//                    return label;
+//                } else
+//                    return this.referencedLabels.get(token);
+//            }
 
             switch (token) {
                 case "a":
-                    return new Register(Register.Reg.A);
+                    return new Reg(Reg.R.A);
                 case "b":
-                    return new Register(Register.Reg.B);
+                    return new Reg(Reg.R.B);
                 case "c":
-                    return new Register(Register.Reg.C);
+                    return new Reg(Reg.R.C);
                 case "d":
-                    return new Register(Register.Reg.D);
+                    return new Reg(Reg.R.D);
                 default:
                     int i = Integer.parseInt(token);
-                    return new Constant(i);
+                    return new Const(i);
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             throw new RuntimeException(String.format("Parse error at line %d: %s", lineNumber, line));
         }
     }
 
-    /**
-     * Stores memory offsets for variables.
-     * <p>
-     * Only works with single integers for now
-     *
-     * @param name the name of the variable
-     */
-    public void defineVariable(String name, int size) {
-        variableOffsets.put(name, memCounter);
-        memCounter += size;
+    private String label(String token) {
+        return token;
     }
 
-    public int getMemOffsetForVariable(String name) {
-        Integer addr = variableOffsets.get(name);
-        if (addr != null) return addr;
-        else throw new RuntimeException("Undefined variable \"" + name + "\"");
+    private Reg reg(String token) {
+        switch (token) {
+            case "a":
+                return new Reg(Reg.R.A);
+            case "b":
+                return new Reg(Reg.R.B);
+            case "c":
+                return new Reg(Reg.R.C);
+            case "d":
+                return new Reg(Reg.R.D);
+            default:
+                throw new RuntimeException("Unknown register \"" + token + "\"");
+        }
     }
 }

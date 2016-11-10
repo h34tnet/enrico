@@ -38,15 +38,11 @@ public interface Operation {
 
     Integer exec(VM vm);
 
-    int[] encode(LabelOffsetTranslator program);
+    int[] encode(Compiler compiler);
 
     /**
      * @return the number of INTs the operation needs when encoded (incl. operands)
      */
     int length();
-
-    interface AddressTranslator {
-        void translate(LabelOffsetTranslator translator);
-    }
 
 }

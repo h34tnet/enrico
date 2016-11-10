@@ -1,8 +1,9 @@
 package net.h34t.enrico.op;
 
 import net.h34t.enrico.*;
+import net.h34t.enrico.Compiler;
 
-public class JmpGTOp implements Operation, Operation.AddressTranslator {
+public class JmpGTOp implements Operation, Compiler.AddressTranslator {
 
     private final Ref op1, op2;
     private Ref label;
@@ -23,7 +24,7 @@ public class JmpGTOp implements Operation, Operation.AddressTranslator {
     }
 
     @Override
-    public int[] encode(LabelOffsetTranslator lot) {
+    public int[] encode(Compiler lot) {
         return Encoder.encode(lot, JMPGT, label, op1, op2);
     }
 
@@ -40,6 +41,6 @@ public class JmpGTOp implements Operation, Operation.AddressTranslator {
     @Override
     public void translate(LabelOffsetTranslator translator) {
         if (label instanceof Label)
-            label = new Constant(translator.get((Label) label));
+            label = new Const(translator.get((Label) label));
     }
 }

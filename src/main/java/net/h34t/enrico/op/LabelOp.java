@@ -1,8 +1,7 @@
 package net.h34t.enrico.op;
 
-import net.h34t.enrico.LabelOffsetTranslator;
+import net.h34t.enrico.Compiler;
 import net.h34t.enrico.Operation;
-import net.h34t.enrico.Ref;
 import net.h34t.enrico.VM;
 
 /**
@@ -12,9 +11,9 @@ import net.h34t.enrico.VM;
  */
 public class LabelOp implements Operation {
 
-    private final Ref label;
+    private final String label;
 
-    public LabelOp(Ref label) {
+    public LabelOp(String label) {
         this.label = label;
     }
 
@@ -24,7 +23,7 @@ public class LabelOp implements Operation {
         return null;
     }
 
-    public Ref getLabel() {
+    public String getLabel() {
         return label;
     }
 
@@ -34,12 +33,12 @@ public class LabelOp implements Operation {
     }
 
     @Override
-    public int[] encode(LabelOffsetTranslator lot) {
+    public int[] encode(Compiler lot) {
         return new int[]{};
     }
 
     @Override
     public String toString() {
-        return label.toString();
+        return label;
     }
 }

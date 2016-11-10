@@ -1,11 +1,11 @@
 package net.h34t.enrico;
 
-public class Address implements Ref {
+public class Addr implements Ref {
 
     public final String name;
     public final int offs;
 
-    public Address(String name, int offs) {
+    public Addr(String name, int offs) {
         this.name = name;
         this.offs = offs;
     }
@@ -26,7 +26,7 @@ public class Address implements Ref {
     }
 
     @Override
-    public int encode(LabelOffsetTranslator lot) {
+    public int encode() {
         return offs;
     }
 }

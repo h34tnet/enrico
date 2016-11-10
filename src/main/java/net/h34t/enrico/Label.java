@@ -23,7 +23,7 @@ public class Label implements Ref {
     }
 
     @Override
-    public int encode(LabelOffsetTranslator program) {
+    public int encode() {
         return program.get(this);
     }
 
